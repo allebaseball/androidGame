@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="240" height="13" tilewidth="32" tileheight="32" nextobjectid="60">
+ <tileset firstgid="1" name="Tiles_32x32" tilewidth="32" tileheight="32" tilecount="64">
+  <image source="../sprites/Tiles_32x32.png" width="256" height="256"/>
+  <tile id="41">
+   <objectgroup draworder="index">
+    <object id="0" x="29" y="11">
+     <polyline points="0,0 -9,8 -14,5 -24,6 -26,12 -18,14 -10,14 -6,17 2,15"/>
+    </object>
+   </objectgroup>
+  </tile>
+ </tileset>
+ <tileset firstgid="65" name="blueRekt" tilewidth="32" tileheight="32" tilecount="1">
+  <image source="../sprites/blueRekt.png" width="40" height="40"/>
+ </tileset>
+ <layer name="Background" width="240" height="13">
+  <data encoding="base64" compression="zlib">
+   eJzt08EJwEAMA8FrKEWk/6ZSwwmCwJ6B/flpveecV+Nih/afyX7Jtf9M9kuu/WeyX3LtP5P9kmv/meyXXPvPZL/kbn7iubyX/fIv+50ZO9jvzNjBfmfGDvY7M3Zo/5nsl9wHzjyFKg==
+  </data>
+ </layer>
+ <layer name="Graphic Layer" width="240" height="13">
+  <data encoding="base64" compression="zlib">
+   eJzt2EsKgzAUBdA4cicq1ln2v7cqtEQKsRJ/LZ4DD8VHQiaXxIQAkPRjDWO1heOb1/ipur0WBTcyZag0fwDAcc7ao9/naWdp2C5evQCgWJ35Hj+eS/2SO65HSPda9mNYL5fZeX9eS71vcwH/Q7bhfGvytvVfWbYBuIuYeQd+S6UuKdjDE8A1BhU=
+  </data>
+ </layer>
+ <objectgroup name="ground">
+  <object id="47" x="0" y="384" width="3008" height="32"/>
+  <object id="57" x="0" y="0" width="32" height="384"/>
+  <object id="59" x="1064" y="515"/>
+ </objectgroup>
+ <objectgroup name="casses">
+  <object id="11" x="800" y="224" width="32" height="32"/>
+  <object id="12" x="832" y="224" width="32" height="32"/>
+  <object id="13" x="864" y="224" width="32" height="32"/>
+  <object id="14" x="576" y="224" width="32" height="32"/>
+  <object id="15" x="608" y="224" width="32" height="32"/>
+  <object id="16" x="640" y="224" width="32" height="32"/>
+  <object id="17" x="672" y="224" width="32" height="32"/>
+  <object id="18" x="896" y="224" width="32" height="32"/>
+  <object id="19" x="928" y="224" width="32" height="32"/>
+  <object id="20" x="416" y="192" width="32" height="32"/>
+  <object id="21" x="320" y="224" width="32" height="32"/>
+  <object id="50" x="480" y="288" width="32" height="32"/>
+  <object id="51" x="512" y="288" width="32" height="32"/>
+  <object id="52" x="1056" y="256" width="32" height="32"/>
+  <object id="53" x="1088" y="256" width="32" height="32"/>
+  <object id="54" x="1120" y="256" width="32" height="32"/>
+  <object id="55" x="1152" y="256" width="32" height="32"/>
+  <object id="56" x="1280" y="288" width="128" height="32"/>
+ </objectgroup>
+ <objectgroup name="gems">
+  <object id="34" x="160" y="352" width="32" height="32"/>
+  <object id="35" x="256" y="352" width="32" height="32"/>
+  <object id="36" x="416" y="160" width="32" height="32"/>
+  <object id="37" x="608" y="192" width="32" height="32"/>
+  <object id="38" x="672" y="192" width="32" height="32"/>
+  <object id="39" x="768" y="288" width="32" height="32"/>
+  <object id="40" x="864" y="192" width="32" height="32"/>
+  <object id="41" x="928" y="192" width="32" height="32"/>
+ </objectgroup>
+</map>
