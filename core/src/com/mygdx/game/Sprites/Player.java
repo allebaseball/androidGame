@@ -25,7 +25,7 @@ public class Player extends Sprite {
     private boolean grounded = false;
 
     private Vector2 velocity = new Vector2();
-    private float speed = 80*2, gravity = 40*1.8f;
+    private float speed = 60*2, gravity = 40*1.8f;
 
 
 

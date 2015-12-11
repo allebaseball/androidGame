@@ -49,7 +49,11 @@ public class PlayScreen implements Screen{
 
         gamecam = new OrthographicCamera();
         gamePort = new FitViewport(androidGame.V_WIDTH , androidGame.V_HEIGHT , gamecam);
-        gamecam.position.set(gamePort.getWorldWidth() / 2 + 32, gamePort.getWorldHeight() / 2, 0);
+        gamecam.position.set(
+                gamePort.getWorldWidth() / 2 + 32,
+                gamePort.getWorldHeight() / 2,
+                0
+        );
 
         hud = new Hud(game.batch);
 
