@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -37,13 +38,13 @@ public class PlayScreen implements Screen{
 
     public PlayScreen(androidGame game) {
         this.game = game;
-        spawnPos = new Vector2(50,50);
+        spawnPos = new Vector2(100, 100);
     }
 
     @Override
     public void show() {
         mapLoader = new TmxMapLoader();
-        map = mapLoader.load("maps/TestTiledMap.tmx");
+        map = mapLoader.load("maps/TestTiledMapTest.tmx");
 
         renderer = new OrthogonalTiledMapRenderer(map);
 
@@ -59,7 +60,7 @@ public class PlayScreen implements Screen{
 
         FPSfont = new BitmapFont();
 
-        p1 = new Player(spawnPos);
+        p1 = new Player(spawnPos, (TiledMapTileLayer) map.getLayers().get(1));
     }
 
     public void handleInput(float dt) {
