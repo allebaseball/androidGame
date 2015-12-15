@@ -19,6 +19,8 @@ import com.mygdx.game.androidGame;
 public class PlayScreen implements Screen{
     private androidGame game;
 
+    private boolean loaded = false;
+
     private OrthographicCamera gamecam;
     private Viewport gamePort;
     private Hud hud;
@@ -38,7 +40,7 @@ public class PlayScreen implements Screen{
 
     public PlayScreen(androidGame game) {
         this.game = game;
-        spawnPos = new Vector2(100, 100);
+        spawnPos = new Vector2(100, 500);
     }
 
     @Override
@@ -89,7 +91,6 @@ public class PlayScreen implements Screen{
 
     @Override
     public void render(float delta) {
-        update(delta);
         // set color and clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -97,12 +98,13 @@ public class PlayScreen implements Screen{
         // render game map
         renderer.render();
 
+        update(delta);
+
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
 
         p1.draw(game.batch);
         game.batch.end();
-
         // FPS on screen
         game.FPSbatch.begin();
         FPSfont.draw(

@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.InputProcessor;
+import com.mygdx.game.androidGame;
 
 
 public class Player extends Sprite implements InputProcessor{
@@ -36,9 +37,7 @@ public class Player extends Sprite implements InputProcessor{
     private Vector2 velocity = new Vector2();
 
     // world variables
-    private float speed = 100*2, gravity = 100*1.8f;
-
-
+    private float speedX = 50*2,speedY = 120*2 , gravity = 220*1.8f;
 
     public Player(TiledMapTileLayer collisionLayer) {
         super(new Texture("sprites/redRekt.png"));
@@ -49,23 +48,18 @@ public class Player extends Sprite implements InputProcessor{
     public void update (float dt) {
         // apply gravity
         velocity.y -= gravity*dt;
+        updateMove();
 
-        // clamp velocity
-//        if (velocity.y > speed)
-//            velocity.y = speed;
-//        else if (velocity.y < -speed)
-//            velocity.y = -speed;
-
-        velocity.y = MathUtils.clamp(velocity.y, -speed, speed);
+        velocity.y = MathUtils.clamp(velocity.y, -speedY, speedY);
 
         float oldX = getX(), oldY = getY();
-        System.out.println(velocity.x +" " +  velocity.y);
+       // System.out.println(velocity.x +" " +  velocity.y);
 
         setX(oldX + velocity.x * dt);
 
         if (checkCollisionX(getX(), getY())) {
             setX(oldX);
-            velocity.x = 0;
+           // velocity.x = 0;
         }
 
         setY(oldY + velocity.y * dt);
@@ -74,6 +68,19 @@ public class Player extends Sprite implements InputProcessor{
             setY(oldY);
             velocity.y = 0;
         }
+    }
+
+    private void updateMove (){
+        if(rightMove)
+            velocity.x = speedX;
+        else if(leftMove)
+            velocity.x = -speedX;
+
+        if(canJump&&jumpMove) {
+            velocity.y = speedY;
+            canJump = false;
+        }
+        System.out.println(canJump + " " + jumpMove);
     }
 
     private boolean checkCollisionX(float x, float y) {
@@ -234,21 +241,27 @@ public class Player extends Sprite implements InputProcessor{
         super.draw(batch);
     }
 
+
     // InputProcessor methods
     @Override
     public boolean keyDown(int keycode) {
         switch (keycode) {
+            // move player input handling
             case Input.Keys.A:
-                velocity.x = -speed;
+                leftMove = true;
                 break;
             case Input.Keys.D:
-                velocity.x = speed;
+                rightMove = true;
                 break;
             case Input.Keys.W:
-                if (canJump) {
-                    velocity.y = speed;
-                    canJump = false;
-                }
+                jumpMove = true;
+                break;
+            // switch player input handling
+            case Input.Keys.Q:
+                switchPlayer(-1);
+                break;
+            case Input.Keys.E:
+                switchPlayer(1);
                 break;
         }
         return true;
@@ -258,9 +271,25 @@ public class Player extends Sprite implements InputProcessor{
     public boolean keyUp(int keycode) {
         switch (keycode) {
             case Input.Keys.A:
-                /* falls through */
+                leftMove = false;
+
+                if(!rightMove)
+                    velocity.x = 0;
+                else
+                    velocity.x = speedX;
+                break;
+
             case Input.Keys.D:
-                velocity.x = 0;
+                rightMove = false;
+
+                if(!leftMove)
+                    velocity.x = 0;
+                else
+                    velocity.x = -speedX;
+                break;
+
+            case Input.Keys.W:
+                jumpMove = false;
                 break;
             default:
                 break;
@@ -275,12 +304,31 @@ public class Player extends Sprite implements InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+        if ((screenX < Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
+            leftMove = true;
+        else if((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
+            rightMove = true;
+        else if((screenY < Gdx.graphics.getHeight() / 2))
+            jumpMove = true;
+        return true;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
+        if ((screenX < Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2)) {
+            leftMove = false;
+            if(!rightMove)
+                velocity.x = 0;
+        }
+        else if((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2)) {
+            rightMove = false;
+            if (!leftMove)
+                velocity.x = 0;
+        }
+        else if((screenY < Gdx.graphics.getHeight() / 2))
+                jumpMove = false;
+
+        return true;
     }
 
     @Override
