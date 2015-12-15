@@ -1,14 +1,16 @@
 package com.mygdx.game.Sprites;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.InputProcessor;
 
 
-public class Player extends Sprite {
+public class Player extends Sprite implements InputProcessor{
     private Texture red = new Texture("sprites/redRekt.png");
     private Texture yell = new Texture("sprites/yellRekt.png");
     private Texture green = new Texture("sprites/greenRekt.png");
@@ -25,20 +27,22 @@ public class Player extends Sprite {
     private boolean first = false;
     private boolean grounded = false;
 
+    //handle moving variables
+    private boolean canJump;
+
     // player variables
     private TiledMapTileLayer collisionLayer;
     private Vector2 velocity = new Vector2();
 
     // world variables
-    private float speed = 200*2, gravity = 100*1.8f;
+    private float speed = 75*2, gravity = 100*1.8f;
 
 
 
-    public Player(Vector2 position, TiledMapTileLayer collisionLayer) {
+    public Player(TiledMapTileLayer collisionLayer) {
         super(new Texture("sprites/redRekt.png"));
         this.collisionLayer = collisionLayer;
         setBounds(0, 0, 26 , 50);
-        setPosition(position.x,position.y);
     }
 
     public void update (float dt) {
@@ -52,17 +56,19 @@ public class Player extends Sprite {
             velocity.y = -speed;
 
         float oldX = getX(), oldY = getY();
+        System.out.println(velocity.x +" " +  velocity.y);
 
         setX(oldX + velocity.x * dt);
-        setY(oldY + velocity.y * dt);
 
         if (checkCollisionX()) {
             setX(oldX);
             velocity.x = 0;
         }
+
+        setY(oldY + velocity.y * dt);
+
         if (checkCollisionY()) {
             setY(oldY);
-            velocity.y = 0;
         }
     }
 
@@ -71,45 +77,57 @@ public class Player extends Sprite {
 
         if (velocity.x < 0) {
             // top left
-            collided = collisionLayer.getCell(
-                    (int) (getX() / collisionLayer.getTileWidth()),
-                    (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
-                    ).getTile().getProperties().containsKey("blocked");
+            if(collisionLayer.getCell((int) (getX()  / collisionLayer.getTileWidth()),(int) ((getY() + getHeight()) / collisionLayer.getTileHeight())) != null) {
+                collided = collisionLayer.getCell(
+                        (int) (getX() / collisionLayer.getTileWidth()),
+                        (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
+                        ).getTile().getProperties().containsKey("blocked");
+            }
 
             // middle left
             if (!collided)
-                collided = collisionLayer.getCell(
-                        (int) (getX() / collisionLayer.getTileWidth()),
-                        (int) ((getY() + getHeight() / 2) / collisionLayer.getTileHeight())
-                        ).getTile().getProperties().containsKey("blocked");
+                if(collisionLayer.getCell((int) (getX() / collisionLayer.getTileWidth()),(int) ((getY() + getHeight() / 2) / collisionLayer.getTileHeight())) != null) {
+                    collided = collisionLayer.getCell(
+                            (int) (getX() / collisionLayer.getTileWidth()),
+                            (int) ((getY() + getHeight() / 2) / collisionLayer.getTileHeight())
+                             ).getTile().getProperties().containsKey("blocked");
+                }
 
             // bottom left
             if (!collided)
-                collided = collisionLayer.getCell(
-                        (int) (getX() / collisionLayer.getTileWidth()),
-                        (int) (getY() / collisionLayer.getTileHeight())
-                        ).getTile().getProperties().containsKey("blocked");
+                if(collisionLayer.getCell((int) (getX() / collisionLayer.getTileWidth()),(int) (getY() / collisionLayer.getTileHeight())) != null) {
+                    collided = collisionLayer.getCell(
+                            (int) (getX() / collisionLayer.getTileWidth()),
+                            (int) (getY() / collisionLayer.getTileHeight())
+                          ).getTile().getProperties().containsKey("blocked");
+                }
         }
         else if (velocity.x > 0) {
             // top right
-            collided = collisionLayer.getCell(
-                    (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
-                    (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
-                    ).getTile().getProperties().containsKey("blocked");
+            if(collisionLayer.getCell((int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),(int) ((getY() + getHeight()) / collisionLayer.getTileHeight())) != null) {
+                collided = collisionLayer.getCell(
+                        (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
+                        (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
+                         ).getTile().getProperties().containsKey("blocked");
+            }
 
             // middle right
             if (!collided)
-                collided = collisionLayer.getCell(
-                        (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
-                        (int) ((getY() + getHeight() / 2) / collisionLayer.getTileHeight())
-                        ).getTile().getProperties().containsKey("blocked");
+                if(collisionLayer.getCell((int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),(int) ((getY() + getHeight() / 2) / collisionLayer.getTileHeight())) != null) {
+                    collided = collisionLayer.getCell(
+                            (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
+                            (int) ((getY() + getHeight() / 2) / collisionLayer.getTileHeight())
+                              ).getTile().getProperties().containsKey("blocked");
+                }
 
             // bottom right
             if (!collided)
-                collided = collisionLayer.getCell(
-                        (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
-                        (int) (getY() / collisionLayer.getTileHeight())
-                        ).getTile().getProperties().containsKey("blocked");
+                if(collisionLayer.getCell((int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),(int) (getY() / collisionLayer.getTileHeight())) != null) {
+                    collided = collisionLayer.getCell(
+                            (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
+                            (int) (getY() / collisionLayer.getTileHeight())
+                            ).getTile().getProperties().containsKey("blocked");
+                }
         }
 
         return collided;
@@ -120,73 +138,60 @@ public class Player extends Sprite {
 
         if (velocity.y > 0) {
             // top left
-            collided = collisionLayer.getCell(
-                    (int) (getX() / collisionLayer.getTileWidth()),
-                    (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
-                    ).getTile().getProperties().containsKey("blocked");
+            if(collisionLayer.getCell((int) (getX() / collisionLayer.getTileWidth()),(int) ((getY() + getHeight()) / collisionLayer.getTileHeight())) != null) {
+                collided = collisionLayer.getCell(
+                        (int) (getX() / collisionLayer.getTileWidth()),
+                        (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
+                        ).getTile().getProperties().containsKey("blocked");
+            }
 
             // top middle
             if (!collided)
-                collided = collisionLayer.getCell(
-                        (int) ((getX() + getWidth() / 2) / collisionLayer.getTileWidth()),
-                        (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
-                        ).getTile().getProperties().containsKey("blocked");
+                if(collisionLayer.getCell((int) ((getX() + getWidth() / 2) / collisionLayer.getTileWidth()),(int) ((getY() + getHeight()) / collisionLayer.getTileHeight())) != null) {
+                    collided = collisionLayer.getCell(
+                            (int) ((getX() + getWidth() / 2) / collisionLayer.getTileWidth()),
+                            (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
+                            ).getTile().getProperties().containsKey("blocked");
+                }
 
             // top right
             if (!collided)
-                collided = collisionLayer.getCell(
-                        (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
-                        (int) (getY() / collisionLayer.getTileHeight())
-                        ).getTile().getProperties().containsKey("blocked");
+                if(collisionLayer.getCell((int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),(int) ((getY() + getHeight()) / collisionLayer.getTileHeight())) != null) {
+                    collided = collisionLayer.getCell(
+                            (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
+                            (int) (getY() / collisionLayer.getTileHeight())
+                            ).getTile().getProperties().containsKey("blocked");
+                }
         }
-        else if (velocity.y < 0) {
-            // bottom left
-            collided = collisionLayer.getCell(
-                    (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
-                    (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
-                    ).getTile().getProperties().containsKey("blocked");
 
+ else if (velocity.y < 0) {
+            // bottom left
+            if(collisionLayer.getCell((int) ((getX()) / collisionLayer.getTileWidth()),(int) (getY() / collisionLayer.getTileHeight())) != null) {
+                collided = collisionLayer.getCell(
+                        (int) (getX() / collisionLayer.getTileWidth()),
+                        (int) (getY() / collisionLayer.getTileHeight())
+                       ).getTile().getProperties().containsKey("blocked");
+            }
             // bottom middle
             if (!collided)
-                collided = collisionLayer.getCell(
-                        (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
-                        (int) ((getY() + getHeight() / 2) / collisionLayer.getTileHeight())
-                        ).getTile().getProperties().containsKey("blocked");
-
+                if(collisionLayer.getCell((int) ((getX() + getWidth() / 2) / collisionLayer.getTileWidth()),(int) (getY() / collisionLayer.getTileHeight())) != null) {
+                    collided = collisionLayer.getCell(
+                            (int) ((getX() + getWidth() /2 ) / collisionLayer.getTileWidth()),
+                            (int) (getY() / collisionLayer.getTileHeight())
+                            ).getTile().getProperties().containsKey("blocked");
+                }
             // bottom right
             if (!collided)
-                collided = collisionLayer.getCell(
-                        (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
-                        (int) ((getY() + getHeight()) / collisionLayer.getTileHeight())
-                        ).getTile().getProperties().containsKey("blocked");
+                if(collisionLayer.getCell((int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),(int) (getY() / collisionLayer.getTileHeight())) != null) {
+                    collided = collisionLayer.getCell(
+                            (int) ((getX() + getWidth()) / collisionLayer.getTileWidth()),
+                            (int) (getY() / collisionLayer.getTileHeight())
+                            ).getTile().getProperties().containsKey("blocked");
+                }
+            canJump = collided;
         }
 
         return collided;
-    }
-
-    public void setLeftMove(boolean flag) {
-        leftMove = flag;
-        first = flag;
-    }
-
-    public void setRightMove(boolean flag) {
-        rightMove = flag;
-        first = flag;
-    }
-
-    public void setJump() {
-        if (grounded) {
-            velocity.y = 500;//jumpMove = true;
-            grounded = false;
-        }
-    }
-
-    public void resetLeftMove() {
-        leftMove = false;
-    }
-
-    public void resetRightMove() {
-        rightMove = false;
     }
 
     public void switchPlayer(int verse) {
@@ -211,11 +216,6 @@ public class Player extends Sprite {
                 default:
                     break;
             }
-
-//            System.out.println(++switchCount);
-//        }
-
-//        System.out.println(pNum);
     }
 
     public void resetSwitch() {
@@ -228,4 +228,63 @@ public class Player extends Sprite {
         super.draw(batch);
     }
 
+    // InputProcessor methods
+    @Override
+    public boolean keyDown(int keycode) {
+        switch(keycode) {
+            case Input.Keys.A:
+                velocity.x = -speed;
+                break;
+            case Input.Keys.D:
+                velocity.x = speed;
+                break;
+            case Input.Keys.W:
+                if(canJump) {
+                    velocity.y = speed;
+                    canJump = false;
+                }
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        switch(keycode) {
+            case Input.Keys.A:
+            case Input.Keys.D:
+                velocity.x = 0;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
 }

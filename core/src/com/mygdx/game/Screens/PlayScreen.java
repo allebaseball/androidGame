@@ -60,12 +60,16 @@ public class PlayScreen implements Screen{
 
         FPSfont = new BitmapFont();
 
-        p1 = new Player(spawnPos, (TiledMapTileLayer) map.getLayers().get(1));
+        p1 = new Player((TiledMapTileLayer) map.getLayers().get(1));
+        p1.setPosition(spawnPos.x,spawnPos.y);
+
+        Gdx.input.setInputProcessor(p1);
+
     }
 
     public void handleInput(float dt) {
         if (Gdx.input.justTouched()) {
-            p1.setJump();
+            //p1.setJump();
         }
     }
 
@@ -139,5 +143,4 @@ public class PlayScreen implements Screen{
         renderer.dispose();
         hud.dispose();
     }
-
 }
