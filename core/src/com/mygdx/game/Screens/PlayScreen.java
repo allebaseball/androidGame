@@ -25,12 +25,12 @@ public class PlayScreen implements Screen{
 
     private Vector2 spawnPos;
 
-    //Tiled map variables
+    // Tiled map variables
     private TmxMapLoader mapLoader;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
 
-    //Box2d variables
+    // Box2d variables
 
     private Player p1;
 
@@ -90,14 +90,12 @@ public class PlayScreen implements Screen{
     @Override
     public void render(float delta) {
         update(delta);
-        //Set color and clear screen
+        // set color and clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        //Render game map
+        // render game map
         renderer.render();
-
-        //Render Box2DDebugLines
 
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
@@ -105,14 +103,14 @@ public class PlayScreen implements Screen{
         p1.draw(game.batch);
         game.batch.end();
 
-        //FPS on screen
+        // FPS on screen
         game.FPSbatch.begin();
         FPSfont.draw(
                 game.FPSbatch,
                 "FPS: " + Gdx.graphics.getFramesPerSecond(), 20, 20);
         game.FPSbatch.end();
 
-        //Hud draw
+        // Hud draw
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
     }
