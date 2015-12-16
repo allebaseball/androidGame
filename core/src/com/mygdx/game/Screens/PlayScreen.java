@@ -19,8 +19,6 @@ import com.mygdx.game.androidGame;
 public class PlayScreen implements Screen{
     private androidGame game;
 
-    private boolean loaded = false;
-
     private OrthographicCamera gamecam;
     private Viewport gamePort;
     private Hud hud;
@@ -79,11 +77,13 @@ public class PlayScreen implements Screen{
         handleInput(dt);
         p1.update(dt);
 
-        gamecam.position.set(
-                p1.getX() + p1.getWidth() / 2,
-                p1.getY() + p1.getHeight() / 2,
-                0
-        );
+        if (p1.getX() > gamePort.getWorldWidth() / 2 + 32) {
+//            gamecam.position.x = gamePort.getWorldWidth() / 2;
+            gamecam.position.x = p1.getX() + p1.getWidth() / 2; //+ p1.getWidth() / 2;
+        }
+//        else {
+//            gamecam.position.x = p1.getX() + p1.getWidth() / 2;
+//        }
 
         gamecam.update();
         renderer.setView(gamecam);
@@ -105,6 +105,7 @@ public class PlayScreen implements Screen{
 
         p1.draw(game.batch);
         game.batch.end();
+
         // FPS on screen
         game.FPSbatch.begin();
         FPSfont.draw(

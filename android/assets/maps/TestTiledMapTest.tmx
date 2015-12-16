@@ -17,6 +17,21 @@
     <property name="blocked" value=""/>
    </properties>
   </tile>
+  <tile id="3">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
   <tile id="6">
    <properties>
     <property name="blocked" value=""/>
@@ -28,6 +43,11 @@
      <polyline points="0,0 -9,8 -14,5 -24,6 -26,12 -18,14 -10,14 -6,17 2,15"/>
     </object>
    </objectgroup>
+  </tile>
+  <tile id="47">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
   </tile>
   <tile id="50">
    <properties>
@@ -45,7 +65,7 @@
  </layer>
  <layer name="Graphic Layer" width="240" height="13">
   <data encoding="base64" compression="zlib">
-   eJzt2NEKgjAUAND11J9YlG/7/39LKVGC2dpmFp0DF8XLxn253LkQAGaXIfohToXru8f6Mc6tioI/MvZQaf8BANv51IyeztPO0lAv7l0AUOyY+B6fnmv5kjuua5jvtcxjyJfq2WV+GWu5V3u1rg3YTm1v6194X06/1f4r5851APh1MfH+LcxcuDuIXQJauAFgtgZG
+   eJzt2E0KgzAQhmF1UW+iYrso5P53M0GltjQ/zMSQ1veBQTEYsvmcmK4B8KtuJ8w523rYGoXvD9v7rqZciwL+kC+/LkPS/AEo44z+C6AMTX5L9eh9P81eGngnya/JvgoAEpL89p7n5uMaGpeccd2b17kW/RhIz68vs8fxY4XGYnMBSFPD+ZU223wPcFWa/KbkTfuvHMs2/RxXVkP/BSDzLb/Gc18Lei6wcvl92mqpogXksABNYwaw
   </data>
  </layer>
 </map>

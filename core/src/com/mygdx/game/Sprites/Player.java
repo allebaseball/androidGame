@@ -37,12 +37,12 @@ public class Player extends Sprite implements InputProcessor{
     private Vector2 velocity = new Vector2();
 
     // world variables
-    private float speedX = 50*2,speedY = 120*2 , gravity = 220*1.8f;
+    private float speedX = 50*2, speedY = 120*2, gravity = 220*1.8f;
 
     public Player(TiledMapTileLayer collisionLayer) {
         super(new Texture("sprites/redRekt.png"));
         this.collisionLayer = collisionLayer;
-        setBounds(0, 0, 26 , 50);
+        setBounds(0, 0, 26 , 40);
     }
 
     public void update (float dt) {
@@ -53,7 +53,7 @@ public class Player extends Sprite implements InputProcessor{
         velocity.y = MathUtils.clamp(velocity.y, -speedY, speedY);
 
         float oldX = getX(), oldY = getY();
-       // System.out.println(velocity.x +" " +  velocity.y);
+        // System.out.println(velocity.x +" " +  velocity.y);
 
         setX(oldX + velocity.x * dt);
 
@@ -70,17 +70,17 @@ public class Player extends Sprite implements InputProcessor{
         }
     }
 
-    private void updateMove (){
-        if(rightMove)
+    private void updateMove() {
+        if (rightMove)
             velocity.x = speedX;
-        else if(leftMove)
+        else if (leftMove)
             velocity.x = -speedX;
 
-        if(canJump&&jumpMove) {
+        if (canJump && jumpMove) {
             velocity.y = speedY;
             canJump = false;
         }
-        System.out.println(canJump + " " + jumpMove);
+//        System.out.println(canJump + " " + jumpMove);
     }
 
     private boolean checkCollisionX(float x, float y) {
@@ -304,28 +304,30 @@ public class Player extends Sprite implements InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if ((screenX < Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
+        if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2))
             leftMove = true;
-        else if((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
+        else if ((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
             rightMove = true;
-        else if((screenY < Gdx.graphics.getHeight() / 2))
+        else if ((screenY < Gdx.graphics.getHeight() / 2))
             jumpMove = true;
+
+        System.out.println(screenX + "  " + screenY);
         return true;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if ((screenX < Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2)) {
+        if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
             leftMove = false;
             if(!rightMove)
                 velocity.x = 0;
         }
-        else if((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2)) {
+        else if ((screenX > Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
             rightMove = false;
             if (!leftMove)
                 velocity.x = 0;
         }
-        else if((screenY < Gdx.graphics.getHeight() / 2))
+        else if ((screenY < Gdx.graphics.getHeight() / 2))
                 jumpMove = false;
 
         return true;
