@@ -26,11 +26,9 @@ public class Player extends Sprite implements InputProcessor{
     private boolean leftMove = false;
     private boolean rightMove = false;
     private boolean jumpMove = false;
-    private boolean first = false;
-    private boolean grounded = false;
 
-    //handle moving variables
-    private boolean canJump;
+    // motion variables
+    private boolean grounded;
 
     // player variables
     public TiledMapTileLayer collisionLayer;
@@ -40,9 +38,9 @@ public class Player extends Sprite implements InputProcessor{
     private float speedX = 50*2, speedY = 120*2, gravity = 220*1.8f;
 
     public Player(TiledMapTileLayer collisionLayer) {
-        super(new Texture("sprites/yellRekt.png"));
+        super(new Texture("sprites/runningGoku.png"));
         this.collisionLayer = collisionLayer;
-        setBounds(0, 0, 26 , 40);
+        setBounds(0, 0, 27 , 38);
     }
 
     public void update (float dt) {
@@ -76,11 +74,11 @@ public class Player extends Sprite implements InputProcessor{
         else if (leftMove)
             velocity.x = -speedX;
 
-        if (canJump && jumpMove) {
+        if (grounded && jumpMove) {
             velocity.y = speedY;
-            canJump = false;
+            grounded = false;
         }
-//        System.out.println(canJump + " " + jumpMove);
+//        System.out.println(grounded + " " + jumpMove);
     }
 
     private boolean checkCollisionX(float x, float y) {
@@ -201,7 +199,7 @@ public class Player extends Sprite implements InputProcessor{
                             (int) (y / tileHeight)
                             ).getTile().getProperties().containsKey("blocked");
                 }
-            canJump = collided;
+            grounded = collided;
         }
 
         return collided;
