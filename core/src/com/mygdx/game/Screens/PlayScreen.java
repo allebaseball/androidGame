@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -49,7 +50,7 @@ public class PlayScreen implements Screen{
         renderer = new OrthogonalTiledMapRenderer(map);
 
         gamecam = new OrthographicCamera();
-        gamePort = new FitViewport(androidGame.V_WIDTH , androidGame.V_HEIGHT , gamecam);
+        gamePort = new FitViewport(androidGame.V_WIDTH, androidGame.V_HEIGHT, gamecam);
         gamecam.position.set(
                 gamePort.getWorldWidth() / 2 + 32,
                 gamePort.getWorldHeight() / 2,
@@ -77,13 +78,21 @@ public class PlayScreen implements Screen{
         handleInput(dt);
         p1.update(dt);
 
-        if (p1.getX() > gamePort.getWorldWidth() / 2 + 32) {
-//            gamecam.position.x = gamePort.getWorldWidth() / 2;
-            gamecam.position.x = p1.getX() + p1.getWidth() / 2; //+ p1.getWidth() / 2;
-        }
-//        else {
+        gamecam.position.x = p1.getX() + p1.getWidth();
+        gamecam.position.x = MathUtils.clamp(
+                gamecam.position.x, gamePort.getWorldWidth() / 2 + 32,
+                map.getProperties().get("width", Integer.class) * 32 - gamePort.getWorldWidth() / 2 - 32
+        );
+
+        Gdx.app.log("log", "" + gamecam.position.x);
+
+//        if (p1.getX() > gamePort.getWorldWidth() / 2 + p1.getWidth() / 2) {
+////            gamecam.position.x = gamePort.getWorldWidth() / 2;
 //            gamecam.position.x = p1.getX() + p1.getWidth() / 2;
 //        }
+////        else {
+////            gamecam.position.x = p1.getX() + p1.getWidth() / 2;
+////        }
 
         gamecam.update();
         renderer.setView(gamecam);

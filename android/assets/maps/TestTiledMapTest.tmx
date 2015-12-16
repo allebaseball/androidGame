@@ -49,23 +49,18 @@
     <property name="blocked" value=""/>
    </properties>
   </tile>
-  <tile id="50">
-   <properties>
-    <property name="blocked" value=""/>
-   </properties>
-  </tile>
  </tileset>
  <tileset firstgid="65" name="blueRekt" tilewidth="32" tileheight="32" tilecount="1">
   <image source="../sprites/blueRekt.png" width="40" height="40"/>
  </tileset>
  <layer name="Background" width="240" height="13">
   <data encoding="base64" compression="zlib">
-   eJzt00ENwDAAA7FSK39S45DPSZ0tHYPknnOunot/qHcm/2VX70z+y67emfyXXb0z+S+7emfyX3b1zuS/7OqdyX/Z1TuT/7Krdyb/ZVfvTP7Lrt6Z/JddvTP5L7sPmWaFjg==
+   eJztw0ENAAAMA6GzVv+mpmI/SFg1VVVVVVVVVVVVVVXVxwdfKBhe
   </data>
  </layer>
  <layer name="Graphic Layer" width="240" height="13">
   <data encoding="base64" compression="zlib">
-   eJzt2E0KgzAQhmF1UW+iYrso5P53M0GltjQ/zMSQ1veBQTEYsvmcmK4B8KtuJ8w523rYGoXvD9v7rqZciwL+kC+/LkPS/AEo44z+C6AMTX5L9eh9P81eGngnya/JvgoAEpL89p7n5uMaGpeccd2b17kW/RhIz68vs8fxY4XGYnMBSFPD+ZU223wPcFWa/KbkTfuvHMs2/RxXVkP/BSDzLb/Gc18Lei6wcvl92mqpogXksABNYwaw
+   eJzt2uEKgjAUhuFlpHdSUf7b/d+bGxaO4GztbMZs7wMfhUPxz+ex0WAAHNHZZdzhug+X2eWmPP/6Ot/nXuumgD9zMXJ/fYe0/QOwv1h/AbSttL+/mtHv92nepYGNtr+29o0AyKbt7yQctx+fsXXNHtfTbPtazGP0Lqe/UmfD9TCxtdS1AKS1sn9V2m2eB+hRaX+/6Vvpb+VUt5nn6FUr8xdAPqm/VvjeCmYusPbXx/+P8kQIOUwGs3Z3AacOB1M=
   </data>
  </layer>
 </map>

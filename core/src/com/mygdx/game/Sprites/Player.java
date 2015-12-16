@@ -33,14 +33,14 @@ public class Player extends Sprite implements InputProcessor{
     private boolean canJump;
 
     // player variables
-    private TiledMapTileLayer collisionLayer;
+    public TiledMapTileLayer collisionLayer;
     private Vector2 velocity = new Vector2();
 
     // world variables
     private float speedX = 50*2, speedY = 120*2, gravity = 220*1.8f;
 
     public Player(TiledMapTileLayer collisionLayer) {
-        super(new Texture("sprites/redRekt.png"));
+        super(new Texture("sprites/yellRekt.png"));
         this.collisionLayer = collisionLayer;
         setBounds(0, 0, 26 , 40);
     }
@@ -218,10 +218,10 @@ public class Player extends Sprite implements InputProcessor{
 
             switch (pNum) {
                 case 1:
-                    setTexture(red);
+                    setTexture(yell);
                     break;
                 case 2:
-                    setTexture(yell);
+                    setTexture(red);
                     break;
                 case 3:
                     setTexture(green);
@@ -255,6 +255,13 @@ public class Player extends Sprite implements InputProcessor{
                 break;
             case Input.Keys.W:
                 jumpMove = true;
+                break;
+            // cheats
+            case Input.Keys.SHIFT_RIGHT:
+                if (getX() + 600 < 7200) setX(getX() + 600);
+                break;
+            case Input.Keys.SHIFT_LEFT:
+                if (getX() -600 > 0) setX(getX() - 600);
                 break;
             // switch player input handling
             case Input.Keys.Q:
