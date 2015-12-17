@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.Const;
 import com.mygdx.game.Scenes.Hud;
 import com.mygdx.game.Sprites.Player;
 import com.mygdx.game.androidGame;
@@ -24,16 +25,13 @@ public class PlayScreen implements Screen{
     private Viewport gamePort;
     private Hud hud;
 
-    private Vector2 spawnPos;
-
-    // Tiled map variables
+    // tiled map variables
     private TmxMapLoader mapLoader;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
 
-    // Box2d variables
-
     private Player p1;
+    private Vector2 spawnPos;
 
     private BitmapFont FPSfont;
 
@@ -45,14 +43,14 @@ public class PlayScreen implements Screen{
     @Override
     public void show() {
         mapLoader = new TmxMapLoader();
-        map = mapLoader.load("maps/TestTiledMapTest.tmx");
+        map = mapLoader.load(Const.MAP_PATH);
 
         renderer = new OrthogonalTiledMapRenderer(map);
 
         gamecam = new OrthographicCamera();
-        gamePort = new FitViewport(androidGame.V_WIDTH, androidGame.V_HEIGHT, gamecam);
+        gamePort = new FitViewport(Const.V_WIDTH, Const.V_HEIGHT, gamecam);
         gamecam.position.set(
-                gamePort.getWorldWidth() / 2 + 32,
+                gamePort.getWorldWidth() / 2 + Const.TILE_WIDTH,
                 gamePort.getWorldHeight() / 2,
                 0
         );
@@ -68,31 +66,18 @@ public class PlayScreen implements Screen{
 
     }
 
-    public void handleInput(float dt) {
-        if (Gdx.input.justTouched()) {
-            //p1.setJump();
-        }
-    }
-
     public void update(float dt) {
-        handleInput(dt);
         p1.update(dt);
 
         gamecam.position.x = p1.getX() + p1.getWidth();
         gamecam.position.x = MathUtils.clamp(
-                gamecam.position.x, gamePort.getWorldWidth() / 2 + 32,
-                map.getProperties().get("width", Integer.class) * 32 - gamePort.getWorldWidth() / 2 - 32
+                gamecam.position.x,
+                gamePort.getWorldWidth() / 2 + Const.TILE_WIDTH,
+                map.getProperties().get("width", Integer.class)
+                        * Const.TILE_WIDTH - gamePort.getWorldWidth() / 2 - Const.TILE_WIDTH
         );
 
         Gdx.app.log("log", "" + gamecam.position.x);
-
-//        if (p1.getX() > gamePort.getWorldWidth() / 2 + p1.getWidth() / 2) {
-////            gamecam.position.x = gamePort.getWorldWidth() / 2;
-//            gamecam.position.x = p1.getX() + p1.getWidth() / 2;
-//        }
-////        else {
-////            gamecam.position.x = p1.getX() + p1.getWidth() / 2;
-////        }
 
         gamecam.update();
         renderer.setView(gamecam);
@@ -117,9 +102,7 @@ public class PlayScreen implements Screen{
 
         // FPS on screen
         game.FPSbatch.begin();
-        FPSfont.draw(
-                game.FPSbatch,
-                "FPS: " + Gdx.graphics.getFramesPerSecond(), 20, 20);
+        FPSfont.draw(game.FPSbatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 20, 20);
         game.FPSbatch.end();
 
         // Hud draw

@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.InputProcessor;
+import com.mygdx.game.Const;
 import com.mygdx.game.androidGame;
 
 
@@ -21,6 +22,10 @@ public class Player extends Sprite implements InputProcessor{
     private int pNum = 1;
     private int switchCount;
     private boolean switched = false;
+
+    // tile size
+    private int tileWidth = Const.TILE_WIDTH;
+    private int tileHeight = Const.TILE_HEIGHT;
 
     // update variables
     private boolean leftMove = false;
@@ -35,10 +40,12 @@ public class Player extends Sprite implements InputProcessor{
     private Vector2 velocity = new Vector2();
 
     // world variables
-    private float speedX = 50*2, speedY = 120*2, gravity = 220*1.8f;
+    private float speedX = Const.SPEED_X;
+    public float speedY = Const.SPEED_Y;
+    public float gravity = Const.GRAVITY;
 
     public Player(TiledMapTileLayer collisionLayer) {
-        super(new Texture("sprites/runningGoku.png"));
+        super(new Texture("sprites/standingGoku.png"));
         this.collisionLayer = collisionLayer;
         setBounds(0, 0, 27 , 38);
     }
@@ -83,8 +90,6 @@ public class Player extends Sprite implements InputProcessor{
 
     private boolean checkCollisionX(float x, float y) {
         boolean collided = false;
-        float tileWidth = collisionLayer.getTileWidth();
-        float tileHeight = collisionLayer.getTileHeight();
 
         if (velocity.x < 0) {
             // top left
@@ -146,8 +151,6 @@ public class Player extends Sprite implements InputProcessor{
 
     private boolean checkCollisionY(float x, float y) {
         boolean collided = false;
-        float tileWidth = collisionLayer.getTileWidth();
-        float tileHeight = collisionLayer.getTileHeight();
 
         if (velocity.y > 0) {
             // top left
