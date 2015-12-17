@@ -1,53 +1,86 @@
 package com.mygdx.game.Sprites;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Const;
-import com.mygdx.game.androidGame;
 
 
-public class Player extends Sprite implements InputProcessor{
+public class Player extends Sprite {
+    // texture def
     private Texture red = new Texture("sprites/redRekt.png");
     private Texture yell = new Texture("sprites/yellRekt.png");
     private Texture green = new Texture("sprites/greenRekt.png");
 
     // switchPlayer variables
-    private int pNum = 1;
-    private int switchCount;
-    private boolean switched = false;
+    public int pNum = 1;
 
     // tile size
     private int tileWidth = Const.TILE_WIDTH;
     private int tileHeight = Const.TILE_HEIGHT;
 
     // update variables
-    private boolean leftMove = false;
-    private boolean rightMove = false;
-    private boolean jumpMove = false;
+    public boolean leftMove = false;
+    public boolean rightMove = false;
+    public boolean jumpMove = false;
 
     // motion variables
     private boolean grounded;
 
     // player variables
     public TiledMapTileLayer collisionLayer;
-    private Vector2 velocity = new Vector2();
+    public Vector2 velocity = new Vector2();
 
     // world variables
-    private float speedX = Const.SPEED_X;
+    public float speedX = Const.SPEED_X;
     public float speedY = Const.SPEED_Y;
     public float gravity = Const.GRAVITY;
 
+    // animation
+    public enum State { FALLING, JUMPING, STANDING, RUNNING }
+    public State currentState;
+    public State previousState;
+    private TextureRegion playerStand;
+    private Animation playerRun;
+    private Animation playerJump;
+    private float stateTimer;
+    private boolean runningRight;
+
     public Player(TiledMapTileLayer collisionLayer) {
-        super(new Texture("sprites/standingGoku.png"));
+        super(new Texture("sprites/little_mario.png"));
         this.collisionLayer = collisionLayer;
-        setBounds(0, 0, 27 , 38);
+
+        currentState = State.STANDING;
+        previousState = State.STANDING;
+        stateTimer = 0;
+        runningRight = true;
+
+        // getting run frames
+        Array<TextureRegion> frames = new Array<TextureRegion>();
+        for (int i = 1; i < 4; i++) {
+            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16));
+        }
+        playerRun = new Animation(0.1f, frames);
+        frames.clear();
+
+        // getting jump frames
+        for (int i = 4; i < 6; i++) {
+            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16));
+        }
+        playerJump = new Animation(0.1f, frames);
+        frames.clear();
+
+        playerStand = new TextureRegion(getTexture(), 0, 0, 16, 16);
+
+        setBounds(0, 0, 30, 32);
+        setRegion(playerStand);
     }
 
     public void update (float dt) {
@@ -58,8 +91,6 @@ public class Player extends Sprite implements InputProcessor{
         velocity.y = MathUtils.clamp(velocity.y, -speedY, speedY);
 
         float oldX = getX(), oldY = getY();
-        // System.out.println(velocity.x +" " +  velocity.y);
-
         setX(oldX + velocity.x * dt);
 
         if (checkCollisionX(getX(), getY())) {
@@ -73,6 +104,58 @@ public class Player extends Sprite implements InputProcessor{
             setY(oldY);
             velocity.y = 0;
         }
+
+        setRegion(getFrame(dt));
+    }
+
+    public TextureRegion getFrame(float dt) {
+        currentState  = getState();
+
+        TextureRegion region;
+
+        switch (currentState) {
+            case JUMPING:
+                region = playerJump.getKeyFrame(stateTimer);
+                break;
+            case RUNNING:
+                region = playerRun.getKeyFrame(stateTimer, true);
+                break;
+            case FALLING:
+                /* Falls through */
+            case STANDING:
+                /* Falls through */
+            default:
+                region = playerStand;
+                break;
+        }
+
+        if ((velocity.x < 0 || !runningRight) && !region.isFlipX()) {
+            region.flip(true, false);
+            runningRight = false;
+        }
+        else if ((velocity.x > 0 || runningRight) && region.isFlipX()) {
+            region.flip(true, false);
+            runningRight = true;
+        }
+
+        stateTimer = currentState == previousState ? stateTimer + dt : 0;
+        previousState = currentState;
+
+        return region;
+    }
+
+    public State getState() {
+        if (velocity.y > 0 || (velocity.y < 0 && previousState == State.JUMPING)) {
+            return State.JUMPING;
+        }
+        else if (velocity.y < 0) {
+            return State.FALLING;
+        }
+        else if (velocity.x != 0) {
+            return State.RUNNING;
+        }
+        else
+            return State.STANDING;
     }
 
     private void updateMove() {
@@ -85,7 +168,6 @@ public class Player extends Sprite implements InputProcessor{
             velocity.y = speedY;
             grounded = false;
         }
-//        System.out.println(grounded + " " + jumpMove);
     }
 
     private boolean checkCollisionX(float x, float y) {
@@ -208,151 +290,9 @@ public class Player extends Sprite implements InputProcessor{
         return collided;
     }
 
-    public void switchPlayer(int verse) {
-//        System.out.println(switched);
-        System.out.println("Ciao");
-
-            if (verse == 1)
-                if (++pNum > 3) pNum = 1;
-            if (verse == -1)
-                if (--pNum < 1) pNum = 3;
-
-            switch (pNum) {
-                case 1:
-                    setTexture(yell);
-                    break;
-                case 2:
-                    setTexture(red);
-                    break;
-                case 3:
-                    setTexture(green);
-                    break;
-                default:
-                    break;
-            }
-    }
-
-    public void resetSwitch() {
-        switched = false;
-    }
-
     @Override
     public void draw(Batch batch) {
         update(Gdx.graphics.getDeltaTime());
         super.draw(batch);
-    }
-
-
-    // InputProcessor methods
-    @Override
-    public boolean keyDown(int keycode) {
-        switch (keycode) {
-            // move player input handling
-            case Input.Keys.A:
-                leftMove = true;
-                break;
-            case Input.Keys.D:
-                rightMove = true;
-                break;
-            case Input.Keys.W:
-                jumpMove = true;
-                break;
-            // cheats
-            case Input.Keys.SHIFT_RIGHT:
-                if (getX() + 600 < 7200) setX(getX() + 600);
-                break;
-            case Input.Keys.SHIFT_LEFT:
-                if (getX() -600 > 0) setX(getX() - 600);
-                break;
-            // switch player input handling
-            case Input.Keys.Q:
-                switchPlayer(-1);
-                break;
-            case Input.Keys.E:
-                switchPlayer(1);
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        switch (keycode) {
-            case Input.Keys.A:
-                leftMove = false;
-
-                if(!rightMove)
-                    velocity.x = 0;
-                else
-                    velocity.x = speedX;
-                break;
-
-            case Input.Keys.D:
-                rightMove = false;
-
-                if(!leftMove)
-                    velocity.x = 0;
-                else
-                    velocity.x = -speedX;
-                break;
-
-            case Input.Keys.W:
-                jumpMove = false;
-                break;
-            default:
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2))
-            leftMove = true;
-        else if ((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
-            rightMove = true;
-        else if ((screenY < Gdx.graphics.getHeight() / 2))
-            jumpMove = true;
-
-        System.out.println(screenX + "  " + screenY);
-        return true;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
-            leftMove = false;
-            if(!rightMove)
-                velocity.x = 0;
-        }
-        else if ((screenX > Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
-            rightMove = false;
-            if (!leftMove)
-                velocity.x = 0;
-        }
-        else if ((screenY < Gdx.graphics.getHeight() / 2))
-                jumpMove = false;
-
-        return true;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
     }
 }
