@@ -78,7 +78,7 @@ public class PlayScreen implements Screen{
         handleInput(dt);
         p1.update(dt);
 
-        gamecam.position.x = p1.getX() + p1.getWidth();
+        gamecam.position.x = p1.getX() + p1.getWidth() / 2;
         gamecam.position.x = MathUtils.clamp(
                 gamecam.position.x, gamePort.getWorldWidth() / 2 + 32,
                 map.getProperties().get("width", Integer.class) * 32 - gamePort.getWorldWidth() / 2 - 32
