@@ -149,14 +149,17 @@ public class PlayScreen implements Screen, InputProcessor{
         switch (keycode) {
             // move player input handling
             case Input.Keys.A:
-                player[currentPlayer].leftMove = true;
+                player[currentPlayer].moveLeft();
                 break;
+
             case Input.Keys.D:
-                player[currentPlayer].rightMove = true;
+                player[currentPlayer].moveRight();
                 break;
+
             case Input.Keys.W:
-                player[currentPlayer].jumpMove = true;
+                player[currentPlayer].jump();
                 break;
+
             // cheats
             case Input.Keys.SHIFT_RIGHT:
                 if (player[currentPlayer].getX() + 600 < 7200)
@@ -166,12 +169,17 @@ public class PlayScreen implements Screen, InputProcessor{
                 if (player[currentPlayer].getX() - 600 > 0)
                     player[currentPlayer].setX(player[currentPlayer].getX() - 600);
                 break;
+
             // switch player input handling
             case Input.Keys.Q:
                 switchPlayer(-1);
                 break;
+
             case Input.Keys.E:
                 switchPlayer(1);
+                break;
+
+            default:
                 break;
         }
         return true;
@@ -181,26 +189,17 @@ public class PlayScreen implements Screen, InputProcessor{
     public boolean keyUp(int keycode) {
         switch (keycode) {
             case Input.Keys.A:
-                player[currentPlayer].leftMove = false;
-
-                if(!player[currentPlayer].rightMove)
-                    player[currentPlayer].velocity.x = 0;
-                else
-                    player[currentPlayer].velocity.x = player[currentPlayer].speedX;
+                player[currentPlayer].notMoveLeft();
                 break;
 
             case Input.Keys.D:
-                player[currentPlayer].rightMove = false;
-
-                if(!player[currentPlayer].leftMove)
-                    player[currentPlayer].velocity.x = 0;
-                else
-                    player[currentPlayer].velocity.x = -player[currentPlayer].speedX;
+                player[currentPlayer].notMoveRight();
                 break;
 
             case Input.Keys.W:
-                player[currentPlayer].jumpMove = false;
+                player[currentPlayer].notJump();
                 break;
+
             default:
                 break;
         }
@@ -215,11 +214,11 @@ public class PlayScreen implements Screen, InputProcessor{
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].leftMove = true;
+            player[currentPlayer].moveLeft();
         else if ((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].rightMove = true;
+            player[currentPlayer].moveRight();
         else if ((screenY < Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].jumpMove = true;
+            player[currentPlayer].jump();
 
         System.out.println(screenX + "  " + screenY);
         return true;
@@ -228,17 +227,13 @@ public class PlayScreen implements Screen, InputProcessor{
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
-            player[currentPlayer].leftMove = false;
-            if(!player[currentPlayer].rightMove)
-                player[currentPlayer].velocity.x = 0;
+            player[currentPlayer].notMoveLeft();
         }
         else if ((screenX > Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
-            player[currentPlayer].rightMove = false;
-            if (!player[currentPlayer].leftMove)
-                player[currentPlayer].velocity.x = 0;
+            player[currentPlayer].notMoveRight();
         }
         else if ((screenY < Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].jumpMove = false;
+            player[currentPlayer].notJump();
 
         return true;
     }
@@ -260,29 +255,29 @@ public class PlayScreen implements Screen, InputProcessor{
 
     public void switchPlayer(int verse) {
         Vector2 pos, vel;
+        boolean runningRight;
+        Player.State currentState, previousState;
+        float stateTimer;
 
-        pos = new Vector2(
-                player[currentPlayer].getX(),
-                player[currentPlayer].getY()
-        );
-        vel = new Vector2(
-                player[currentPlayer].velocity.x,
-                player[currentPlayer].velocity.y
-        );
-
-        player[currentPlayer].leftMove = false;
-        player[currentPlayer].rightMove = false;
-        player[currentPlayer].jumpMove = false;
+        runningRight = player[currentPlayer].isRunningRight();
+        pos = player[currentPlayer].getPosition();
+        vel = player[currentPlayer].getVelocity();
+        player[currentPlayer].resetMoves();
+        currentState = player[currentPlayer].getCurrentState();
+        previousState = player[currentPlayer].getPreviousState();
+        stateTimer = player[currentPlayer].getStateTimer();
 
         if (verse == 1)
             if (++currentPlayer > 2) currentPlayer = 0;
         if (verse == -1)
             if (--currentPlayer < 0) currentPlayer = 2;
 
-        player[currentPlayer].setX(pos.x);
-        player[currentPlayer].setY(pos.y);
-        player[currentPlayer].velocity.x = vel.x;
-        player[currentPlayer].velocity.y = vel.y;
+        player[currentPlayer].setRunningRight(runningRight);
+        player[currentPlayer].setPosition(pos);
+        player[currentPlayer].setVelocity(vel);
+        player[currentPlayer].setCurrentState(currentState);
+        player[currentPlayer].setPreviousState(previousState);
+        player[currentPlayer].setStateTimer(stateTimer);
 
         Gdx.app.log("Ciao", "" + currentPlayer);
     }
