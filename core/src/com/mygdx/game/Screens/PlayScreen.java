@@ -18,9 +18,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Const;
 import com.mygdx.game.Scenes.Hud;
 import com.mygdx.game.Sprites.Player;
+import com.mygdx.game.Tools.Controller;
 import com.mygdx.game.androidGame;
 
-public class PlayScreen implements Screen, InputProcessor{
+public class PlayScreen implements Screen/*, InputProcessor*/{
     private androidGame game;
 
     private OrthographicCamera gamecam;
@@ -32,11 +33,13 @@ public class PlayScreen implements Screen, InputProcessor{
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
 
+    //player creation
     private Player[] player = new Player[3];
     private Vector2 spawnPos;
-
     private int currentPlayer = 0;
 
+    //controller
+    Controller controller;
     private BitmapFont FPSfont;
 
     public PlayScreen(androidGame game) {
@@ -68,11 +71,25 @@ public class PlayScreen implements Screen, InputProcessor{
         player[2] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER1_PATH, 2);
         player[currentPlayer].setPosition(spawnPos.x,spawnPos.y);
 
-        Gdx.input.setInputProcessor(this);
+//        Gdx.input.setInputProcessor(this);
+        controller = new Controller();
+
+    }
+
+    public void handleInput(){
+    if(controller.isRightpressed())
+        player[currentPlayer].moveRight();
+    else if(controller.isLeftPressed())
+        player[currentPlayer].moveLeft();
+    else {
+        player[currentPlayer].notMoveRight();
+        player[currentPlayer].notMoveLeft();
+    }
 
     }
 
     public void update(float dt) {
+        handleInput();
         player[currentPlayer].update(dt);
 
         gamecam.position.x = player[currentPlayer].getX() + player[currentPlayer].getWidth() / 2;
@@ -115,11 +132,13 @@ public class PlayScreen implements Screen, InputProcessor{
         // Hud draw
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
+        controller.draw();
     }
 
     @Override
     public void resize(int width, int height) {
         gamePort.update(width, height);
+        controller.resize(width, height);
     }
 
     @Override
@@ -145,143 +164,143 @@ public class PlayScreen implements Screen, InputProcessor{
     }
 
     // InputProcessor methods
-    @Override
-    public boolean keyDown(int keycode) {
-        switch (keycode) {
-            // move player input handling
-            case Input.Keys.A:
-                player[currentPlayer].moveLeft();
-                break;
-
-            case Input.Keys.D:
-                player[currentPlayer].moveRight();
-                break;
-
-            case Input.Keys.W:
-                player[currentPlayer].jump();
-                break;
-
-            // cheats
-            case Input.Keys.SHIFT_RIGHT:
-                if (player[currentPlayer].getX() + 600 < 7200)
-                    player[currentPlayer].setX(player[currentPlayer].getX() + 600);
-                break;
-            case Input.Keys.SHIFT_LEFT:
-                if (player[currentPlayer].getX() - 600 > 0)
-                    player[currentPlayer].setX(player[currentPlayer].getX() - 600);
-                break;
-
-            // switch player input handling
-            case Input.Keys.Q:
-                switchPlayer(-1);
-                break;
-
-            case Input.Keys.E:
-                switchPlayer(1);
-                break;
-
-            default:
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        switch (keycode) {
-            case Input.Keys.A:
-                player[currentPlayer].notMoveLeft();
-                break;
-
-            case Input.Keys.D:
-                player[currentPlayer].notMoveRight();
-                break;
-
-            case Input.Keys.W:
-                player[currentPlayer].notJump();
-                break;
-
-            default:
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].moveLeft();
-        else if ((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].moveRight();
-        else if ((screenY < Gdx.graphics.getHeight() / 2)) {
-//            player[currentPlayer].jump();
-
-        }
-
-        System.out.println(screenX + "  " + screenY);
-        return true;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
-            player[currentPlayer].notMoveLeft();
-        }
-        else if ((screenX > Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
-            player[currentPlayer].notMoveRight();
-        }
-        else if ((screenY < Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].notJump();
-
-        return true;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
-    }
-
-    public void switchPlayer(int verse) {
-        Vector2 pos, vel;
-        boolean runningRight;
-        Player.State currentState, previousState;
-        float stateTimer;
-
-        runningRight = player[currentPlayer].isRunningRight();
-        pos = player[currentPlayer].getPosition();
-        vel = player[currentPlayer].getVelocity();
-        player[currentPlayer].resetMoves();
-        currentState = player[currentPlayer].getCurrentState();
-        previousState = player[currentPlayer].getPreviousState();
-        stateTimer = player[currentPlayer].getStateTimer();
-
-        if (verse == 1)
-            if (++currentPlayer > 2) currentPlayer = 0;
-        if (verse == -1)
-            if (--currentPlayer < 0) currentPlayer = 2;
-
-        player[currentPlayer].setRunningRight(runningRight);
-        player[currentPlayer].setPosition(pos);
-        player[currentPlayer].setVelocity(vel);
-        player[currentPlayer].setCurrentState(currentState);
-        player[currentPlayer].setPreviousState(previousState);
-        player[currentPlayer].setStateTimer(stateTimer);
-
-        Gdx.app.log("Ciao", "" + currentPlayer);
-    }
+//    @Override
+//    public boolean keyDown(int keycode) {
+//        switch (keycode) {
+//            // move player input handling
+//            case Input.Keys.A:
+//                player[currentPlayer].moveLeft();
+//                break;
+//
+//            case Input.Keys.D:
+//                player[currentPlayer].moveRight();
+//                break;
+//
+//            case Input.Keys.W:
+//                player[currentPlayer].jump();
+//                break;
+//
+//            // cheats
+//            case Input.Keys.SHIFT_RIGHT:
+//                if (player[currentPlayer].getX() + 600 < 7200)
+//                    player[currentPlayer].setX(player[currentPlayer].getX() + 600);
+//                break;
+//            case Input.Keys.SHIFT_LEFT:
+//                if (player[currentPlayer].getX() - 600 > 0)
+//                    player[currentPlayer].setX(player[currentPlayer].getX() - 600);
+//                break;
+//
+//            // switch player input handling
+//            case Input.Keys.Q:
+//                switchPlayer(-1);
+//                break;
+//
+//            case Input.Keys.E:
+//                switchPlayer(1);
+//                break;
+//
+//            default:
+//                break;
+//        }
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean keyUp(int keycode) {
+//        switch (keycode) {
+//            case Input.Keys.A:
+//                player[currentPlayer].notMoveLeft();
+//                break;
+//
+//            case Input.Keys.D:
+//                player[currentPlayer].notMoveRight();
+//                break;
+//
+//            case Input.Keys.W:
+//                player[currentPlayer].notJump();
+//                break;
+//
+//            default:
+//                break;
+//        }
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean keyTyped(char character) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+//        if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2))
+//            player[currentPlayer].moveLeft();
+//        else if ((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
+//            player[currentPlayer].moveRight();
+//        else if ((screenY < Gdx.graphics.getHeight() / 2)) {
+////            player[currentPlayer].jump();
+//
+//        }
+//
+//        System.out.println(screenX + "  " + screenY);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+//        if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
+//            player[currentPlayer].notMoveLeft();
+//        }
+//        else if ((screenX > Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
+//            player[currentPlayer].notMoveRight();
+//        }
+//        else if ((screenY < Gdx.graphics.getHeight() / 2))
+//            player[currentPlayer].notJump();
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean touchDragged(int screenX, int screenY, int pointer) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean mouseMoved(int screenX, int screenY) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean scrolled(int amount) {
+//        return false;
+//    }
+//
+//    public void switchPlayer(int verse) {
+//        Vector2 pos, vel;
+//        boolean runningRight;
+//        Player.State currentState, previousState;
+//        float stateTimer;
+//
+//        runningRight = player[currentPlayer].isRunningRight();
+//        pos = player[currentPlayer].getPosition();
+//        vel = player[currentPlayer].getVelocity();
+//        player[currentPlayer].resetMoves();
+//        currentState = player[currentPlayer].getCurrentState();
+//        previousState = player[currentPlayer].getPreviousState();
+//        stateTimer = player[currentPlayer].getStateTimer();
+//
+//        if (verse == 1)
+//            if (++currentPlayer > 2) currentPlayer = 0;
+//        if (verse == -1)
+//            if (--currentPlayer < 0) currentPlayer = 2;
+//
+//        player[currentPlayer].setRunningRight(runningRight);
+//        player[currentPlayer].setPosition(pos);
+//        player[currentPlayer].setVelocity(vel);
+//        player[currentPlayer].setCurrentState(currentState);
+//        player[currentPlayer].setPreviousState(previousState);
+//        player[currentPlayer].setStateTimer(stateTimer);
+//
+//        Gdx.app.log("Ciao", "" + currentPlayer);
+//    }
 }

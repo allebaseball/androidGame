@@ -61,8 +61,9 @@ public class Player extends Sprite {
         int k = 1;
         if (currentPlayer == 1) k = 2;
 
-        // getting run frames
         Array<TextureRegion> frames = new Array<TextureRegion>();
+
+        // getting run frames
         for (int i = 1; i < 4; i++) {
             frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16 * k));
         }

@@ -25,6 +25,8 @@ public class Const {
     public static final String GREEN_PATH = "sprites/greenRekt.png";
     public static final String PLAYER1_PATH = "sprites/little_mario.png";
     public static final String PLAYER2_PATH = "sprites/big_mario.png";
+    public static final String LEFTARROW_PATH = "sprites/left_arrow.png";
+    public static final String RIGHTARROW_PATH = "sprites/right_arrow.png";
 
     private Const() {
         throw new AssertionError();

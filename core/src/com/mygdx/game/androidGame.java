@@ -6,7 +6,7 @@ import com.mygdx.game.Screens.MenuScreen;
 import com.mygdx.game.Screens.PlayScreen;
 
 public class androidGame extends Game {
-	public SpriteBatch batch;
+	public static SpriteBatch batch;
 	public SpriteBatch FPSbatch;
 
 	// screens
