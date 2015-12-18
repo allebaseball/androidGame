@@ -11,13 +11,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Const;
+import com.mygdx.game.Screens.PlayScreen;
+import com.mygdx.game.androidGame;
 
 
 public class Player extends Sprite {
-    // texture def
-    private Texture red = new Texture("sprites/redRekt.png");
-    private Texture yell = new Texture("sprites/yellRekt.png");
-    private Texture green = new Texture("sprites/greenRekt.png");
 
     // tile size
     private int tileWidth = Const.TILE_WIDTH;
@@ -48,33 +46,39 @@ public class Player extends Sprite {
     private float stateTimer;
     private boolean runningRight;
 
-    public Player(TiledMapTileLayer collisionLayer) {
-        super(new Texture("sprites/little_mario.png"));
+    private int currentPlayer;
+
+    public Player(TiledMapTileLayer collisionLayer, String playerTexture, int currentPlayer) {
+        super(new Texture(playerTexture));
         this.collisionLayer = collisionLayer;
+        this.currentPlayer = currentPlayer;
 
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0;
         runningRight = true;
 
+        int k = 1;
+        if (currentPlayer == 1) k = 2;
+
         // getting run frames
         Array<TextureRegion> frames = new Array<TextureRegion>();
         for (int i = 1; i < 4; i++) {
-            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16));
+            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16 * k));
         }
-        playerRun = new Animation(0.1f, frames);
+        playerRun = new Animation(Const.ANIMATION_TIME, frames);
         frames.clear();
 
         // getting jump frames
         for (int i = 4; i < 6; i++) {
-            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16));
+            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16 * k));
         }
         playerJump = new Animation(0.1f, frames);
         frames.clear();
 
-        playerStand = new TextureRegion(getTexture(), 0, 0, 16, 16);
+        playerStand = new TextureRegion(getTexture(), 0, 0, 16, 16 * k);
 
-        setBounds(0, 0, 30, 32);
+        setBounds(0, 0, 30, 32 * k);
         setRegion(playerStand);
     }
 

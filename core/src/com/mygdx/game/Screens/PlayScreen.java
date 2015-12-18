@@ -1,4 +1,4 @@
-package com.mygdx.game.Screens;
+ package com.mygdx.game.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -34,7 +34,8 @@ public class PlayScreen implements Screen, InputProcessor{
 
     private Player[] player = new Player[3];
     private Vector2 spawnPos;
-    private int currentPlayer;
+
+    private int currentPlayer = 0;
 
     private BitmapFont FPSfont;
 
@@ -62,10 +63,9 @@ public class PlayScreen implements Screen, InputProcessor{
 
         FPSfont = new BitmapFont();
 
-        currentPlayer = 0;
-        player[0] = new Player((TiledMapTileLayer) map.getLayers().get(1));
-        player[1] = new Player((TiledMapTileLayer) map.getLayers().get(1));
-        player[2] = new Player((TiledMapTileLayer) map.getLayers().get(1));
+        player[0] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER1_PATH, 0);
+        player[1] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER2_PATH, 1);
+        player[2] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER1_PATH, 2);
         player[currentPlayer].setPosition(spawnPos.x,spawnPos.y);
 
         Gdx.input.setInputProcessor(this);
@@ -104,6 +104,7 @@ public class PlayScreen implements Screen, InputProcessor{
         game.batch.begin();
 
         player[currentPlayer].draw(game.batch);
+//        FPSfont.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 20, 20);
         game.batch.end();
 
         // FPS on screen
