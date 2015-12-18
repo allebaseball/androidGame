@@ -11,32 +11,25 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Const;
+import com.mygdx.game.Screens.PlayScreen;
+import com.mygdx.game.androidGame;
 
 
 public class Player extends Sprite {
-    // texture def
-    private Texture red = new Texture("sprites/redRekt.png");
-    private Texture yell = new Texture("sprites/yellRekt.png");
-    private Texture green = new Texture("sprites/greenRekt.png");
-
-    // switchPlayer variables
-    public int pNum = 1;
 
     // tile size
     private int tileWidth = Const.TILE_WIDTH;
     private int tileHeight = Const.TILE_HEIGHT;
 
-    // update variables
-    public boolean leftMove = false;
-    public boolean rightMove = false;
-    public boolean jumpMove = false;
-
     // motion variables
     private boolean grounded;
+    private boolean leftMove = false;
+    private boolean rightMove = false;
+    private boolean jumpMove = false;
 
     // player variables
     public TiledMapTileLayer collisionLayer;
-    public Vector2 velocity = new Vector2();
+    private Vector2 velocity = new Vector2();
 
     // world variables
     public float speedX = Const.SPEED_X;
@@ -53,33 +46,39 @@ public class Player extends Sprite {
     private float stateTimer;
     private boolean runningRight;
 
-    public Player(TiledMapTileLayer collisionLayer) {
-        super(new Texture("sprites/little_mario.png"));
+    private int currentPlayer;
+
+    public Player(TiledMapTileLayer collisionLayer, String playerTexture, int currentPlayer) {
+        super(new Texture(playerTexture));
         this.collisionLayer = collisionLayer;
+        this.currentPlayer = currentPlayer;
 
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0;
         runningRight = true;
 
+        int k = 1;
+        if (currentPlayer == 1) k = 2;
+
         // getting run frames
         Array<TextureRegion> frames = new Array<TextureRegion>();
         for (int i = 1; i < 4; i++) {
-            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16));
+            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16 * k));
         }
-        playerRun = new Animation(0.1f, frames);
+        playerRun = new Animation(Const.ANIMATION_TIME, frames);
         frames.clear();
 
         // getting jump frames
         for (int i = 4; i < 6; i++) {
-            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16));
+            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16 * k));
         }
         playerJump = new Animation(0.1f, frames);
         frames.clear();
 
-        playerStand = new TextureRegion(getTexture(), 0, 0, 16, 16);
+        playerStand = new TextureRegion(getTexture(), 0, 0, 16, 16 * k);
 
-        setBounds(0, 0, 30, 32);
+        setBounds(0, 0, 30, 32 * k);
         setRegion(playerStand);
     }
 
@@ -156,6 +155,40 @@ public class Player extends Sprite {
         }
         else
             return State.STANDING;
+    }
+
+    public void moveLeft() {
+        leftMove = true;
+    }
+
+    public void moveRight() {
+        rightMove = true;
+    }
+
+    public void jump() {
+        jumpMove = true;
+    }
+
+    public void notMoveLeft() {
+        leftMove = false;
+
+        if(!rightMove)
+            velocity.x = 0;
+        else
+            velocity.x = speedX;
+    }
+
+    public void notMoveRight() {
+        rightMove = false;
+
+        if(!leftMove)
+            velocity.x = 0;
+        else
+            velocity.x = -speedX;
+    }
+
+    public void notJump() {
+        jumpMove = false;
     }
 
     private void updateMove() {
@@ -288,6 +321,61 @@ public class Player extends Sprite {
         }
 
         return collided;
+    }
+
+    public Vector2 getPosition() {
+        return new Vector2(getX(),getY());
+    }
+
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
+    public State getCurrentState() {
+        return currentState;
+    }
+
+    public State getPreviousState() {
+        return previousState;
+    }
+
+    public float getStateTimer() {
+        return stateTimer;
+    }
+
+    public boolean isRunningRight() {
+        return runningRight;
+    }
+
+    public void setPosition(Vector2 position) {
+        setX(position.x);
+        setY(position.y);
+    }
+
+    public void setVelocity(Vector2 velocity) {
+        this.velocity = velocity;
+    }
+
+    public void setCurrentState(State currentState) {
+        this.currentState = currentState;
+    }
+
+    public void setPreviousState(State previousState) {
+        this.previousState = previousState;
+    }
+
+    public void setStateTimer(float stateTimer) {
+        this.stateTimer = stateTimer;
+    }
+
+    public void setRunningRight(boolean runningRight) {
+        this.runningRight = runningRight;
+    }
+
+    public void resetMoves() {
+        leftMove = false;
+        rightMove = false;
+        jumpMove = false;
     }
 
     @Override

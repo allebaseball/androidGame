@@ -1,4 +1,4 @@
-package com.mygdx.game.Screens;
+ package com.mygdx.game.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -34,7 +34,8 @@ public class PlayScreen implements Screen, InputProcessor{
 
     private Player[] player = new Player[3];
     private Vector2 spawnPos;
-    private int currentPlayer;
+
+    private int currentPlayer = 0;
 
     private BitmapFont FPSfont;
 
@@ -62,11 +63,9 @@ public class PlayScreen implements Screen, InputProcessor{
 
         FPSfont = new BitmapFont();
 
-        currentPlayer = 0;
-        player[0] = new Player((TiledMapTileLayer) map.getLayers().get(1));
-        player[1] = new Player((TiledMapTileLayer) map.getLayers().get(1));
-        player[2] = new Player((TiledMapTileLayer) map.getLayers().get(1));
-
+        player[0] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER1_PATH, 0);
+        player[1] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER2_PATH, 1);
+        player[2] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER1_PATH, 2);
         player[currentPlayer].setPosition(spawnPos.x,spawnPos.y);
 
         Gdx.input.setInputProcessor(this);
@@ -105,6 +104,7 @@ public class PlayScreen implements Screen, InputProcessor{
         game.batch.begin();
 
         player[currentPlayer].draw(game.batch);
+//        FPSfont.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 20, 20);
         game.batch.end();
 
         // FPS on screen
@@ -150,14 +150,17 @@ public class PlayScreen implements Screen, InputProcessor{
         switch (keycode) {
             // move player input handling
             case Input.Keys.A:
-                player[currentPlayer].leftMove = true;
+                player[currentPlayer].moveLeft();
                 break;
+
             case Input.Keys.D:
-                player[currentPlayer].rightMove = true;
+                player[currentPlayer].moveRight();
                 break;
+
             case Input.Keys.W:
-                player[currentPlayer].jumpMove = true;
+                player[currentPlayer].jump();
                 break;
+
             // cheats
             case Input.Keys.SHIFT_RIGHT:
                 if (player[currentPlayer].getX() + 600 < 7200)
@@ -167,12 +170,17 @@ public class PlayScreen implements Screen, InputProcessor{
                 if (player[currentPlayer].getX() - 600 > 0)
                     player[currentPlayer].setX(player[currentPlayer].getX() - 600);
                 break;
+
             // switch player input handling
             case Input.Keys.Q:
                 switchPlayer(-1);
                 break;
+
             case Input.Keys.E:
                 switchPlayer(1);
+                break;
+
+            default:
                 break;
         }
         return true;
@@ -182,26 +190,17 @@ public class PlayScreen implements Screen, InputProcessor{
     public boolean keyUp(int keycode) {
         switch (keycode) {
             case Input.Keys.A:
-                player[currentPlayer].leftMove = false;
-
-                if(!player[currentPlayer].rightMove)
-                    player[currentPlayer].velocity.x = 0;
-                else
-                    player[currentPlayer].velocity.x = player[currentPlayer].speedX;
+                player[currentPlayer].notMoveLeft();
                 break;
 
             case Input.Keys.D:
-                player[currentPlayer].rightMove = false;
-
-                if(!player[currentPlayer].leftMove)
-                    player[currentPlayer].velocity.x = 0;
-                else
-                    player[currentPlayer].velocity.x = -player[currentPlayer].speedX;
+                player[currentPlayer].notMoveRight();
                 break;
 
             case Input.Keys.W:
-                player[currentPlayer].jumpMove = false;
+                player[currentPlayer].notJump();
                 break;
+
             default:
                 break;
         }
@@ -216,11 +215,13 @@ public class PlayScreen implements Screen, InputProcessor{
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].leftMove = true;
+            player[currentPlayer].moveLeft();
         else if ((screenX > Gdx.graphics.getWidth() / 2)&&(screenY > Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].rightMove = true;
-        else if ((screenY < Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].jumpMove = true;
+            player[currentPlayer].moveRight();
+        else if ((screenY < Gdx.graphics.getHeight() / 2)) {
+//            player[currentPlayer].jump();
+
+        }
 
         System.out.println(screenX + "  " + screenY);
         return true;
@@ -229,17 +230,13 @@ public class PlayScreen implements Screen, InputProcessor{
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if ((screenX < Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
-            player[currentPlayer].leftMove = false;
-            if(!player[currentPlayer].rightMove)
-                player[currentPlayer].velocity.x = 0;
+            player[currentPlayer].notMoveLeft();
         }
         else if ((screenX > Gdx.graphics.getWidth() / 2) && (screenY > Gdx.graphics.getHeight() / 2)) {
-            player[currentPlayer].rightMove = false;
-            if (!player[currentPlayer].leftMove)
-                player[currentPlayer].velocity.x = 0;
+            player[currentPlayer].notMoveRight();
         }
         else if ((screenY < Gdx.graphics.getHeight() / 2))
-            player[currentPlayer].jumpMove = false;
+            player[currentPlayer].notJump();
 
         return true;
     }
@@ -261,29 +258,29 @@ public class PlayScreen implements Screen, InputProcessor{
 
     public void switchPlayer(int verse) {
         Vector2 pos, vel;
+        boolean runningRight;
+        Player.State currentState, previousState;
+        float stateTimer;
 
-        pos = new Vector2(
-                player[currentPlayer].getX(),
-                player[currentPlayer].getY()
-        );
-        vel = new Vector2(
-                player[currentPlayer].velocity.x,
-                player[currentPlayer].velocity.y
-        );
-
-        player[currentPlayer].leftMove = false;
-        player[currentPlayer].rightMove = false;
-        player[currentPlayer].jumpMove = false;
+        runningRight = player[currentPlayer].isRunningRight();
+        pos = player[currentPlayer].getPosition();
+        vel = player[currentPlayer].getVelocity();
+        player[currentPlayer].resetMoves();
+        currentState = player[currentPlayer].getCurrentState();
+        previousState = player[currentPlayer].getPreviousState();
+        stateTimer = player[currentPlayer].getStateTimer();
 
         if (verse == 1)
             if (++currentPlayer > 2) currentPlayer = 0;
         if (verse == -1)
             if (--currentPlayer < 0) currentPlayer = 2;
 
-        player[currentPlayer].setX(pos.x);
-        player[currentPlayer].setY(pos.y);
-        player[currentPlayer].velocity.x = vel.x;
-        player[currentPlayer].velocity.y = vel.y;
+        player[currentPlayer].setRunningRight(runningRight);
+        player[currentPlayer].setPosition(pos);
+        player[currentPlayer].setVelocity(vel);
+        player[currentPlayer].setCurrentState(currentState);
+        player[currentPlayer].setPreviousState(previousState);
+        player[currentPlayer].setStateTimer(stateTimer);
 
         Gdx.app.log("Ciao", "" + currentPlayer);
     }
