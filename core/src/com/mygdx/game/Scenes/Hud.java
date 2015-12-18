@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.Const;
 import com.mygdx.game.androidGame;
 
 public class Hud implements Disposable{
@@ -32,7 +33,7 @@ public class Hud implements Disposable{
         timeCount = 0;
         score = 0;
 
-        viewport = new FitViewport(androidGame.V_WIDTH,androidGame.V_HEIGHT, new OrthographicCamera());
+        viewport = new FitViewport(Const.V_WIDTH,Const.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, sb);
 
         Table table = new Table();
