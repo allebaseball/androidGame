@@ -21,7 +21,7 @@ import com.mygdx.game.Sprites.Player;
 import com.mygdx.game.Tools.Controller;
 import com.mygdx.game.androidGame;
 
-public class PlayScreen implements Screen/*, InputProcessor*/{
+public class PlayScreen implements Screen {
     private androidGame game;
 
     private OrthographicCamera gamecam;
@@ -33,18 +33,19 @@ public class PlayScreen implements Screen/*, InputProcessor*/{
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
 
-    //player creation
+    // player creation
     private Player[] player = new Player[3];
     private Vector2 spawnPos;
     private int currentPlayer = 0;
 
-    //controller
+    // controller
     Controller controller;
+
     private BitmapFont FPSfont;
 
     public PlayScreen(androidGame game) {
         this.game = game;
-        spawnPos = new Vector2(100, 500);
+        spawnPos = new Vector2(200, 200);
     }
 
     @Override
@@ -71,13 +72,12 @@ public class PlayScreen implements Screen/*, InputProcessor*/{
         player[2] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER1_PATH, 2);
         player[currentPlayer].setPosition(spawnPos.x,spawnPos.y);
 
-//        Gdx.input.setInputProcessor(this);
         controller = new Controller();
-
+//        Gdx.input.setInputProcessor(this);
     }
 
     public void handleInput(){
-    if(controller.isRightpressed())
+    if(controller.isRightPressed())
         player[currentPlayer].moveRight();
     else if(controller.isLeftPressed())
         player[currentPlayer].moveLeft();
@@ -132,6 +132,8 @@ public class PlayScreen implements Screen/*, InputProcessor*/{
         // Hud draw
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
+
+        // controller draw
         controller.draw();
     }
 
@@ -163,7 +165,7 @@ public class PlayScreen implements Screen/*, InputProcessor*/{
         hud.dispose();
     }
 
-    // InputProcessor methods
+////     InputProcessor methods
 //    @Override
 //    public boolean keyDown(int keycode) {
 //        switch (keycode) {
@@ -274,33 +276,33 @@ public class PlayScreen implements Screen/*, InputProcessor*/{
 //    public boolean scrolled(int amount) {
 //        return false;
 //    }
-//
-//    public void switchPlayer(int verse) {
-//        Vector2 pos, vel;
-//        boolean runningRight;
-//        Player.State currentState, previousState;
-//        float stateTimer;
-//
-//        runningRight = player[currentPlayer].isRunningRight();
-//        pos = player[currentPlayer].getPosition();
-//        vel = player[currentPlayer].getVelocity();
-//        player[currentPlayer].resetMoves();
-//        currentState = player[currentPlayer].getCurrentState();
-//        previousState = player[currentPlayer].getPreviousState();
-//        stateTimer = player[currentPlayer].getStateTimer();
-//
-//        if (verse == 1)
-//            if (++currentPlayer > 2) currentPlayer = 0;
-//        if (verse == -1)
-//            if (--currentPlayer < 0) currentPlayer = 2;
-//
-//        player[currentPlayer].setRunningRight(runningRight);
-//        player[currentPlayer].setPosition(pos);
-//        player[currentPlayer].setVelocity(vel);
-//        player[currentPlayer].setCurrentState(currentState);
-//        player[currentPlayer].setPreviousState(previousState);
-//        player[currentPlayer].setStateTimer(stateTimer);
-//
-//        Gdx.app.log("Ciao", "" + currentPlayer);
-//    }
+
+    public void switchPlayer(int verse) {
+        Vector2 pos, vel;
+        boolean runningRight;
+        Player.State currentState, previousState;
+        float stateTimer;
+
+        runningRight = player[currentPlayer].isRunningRight();
+        pos = player[currentPlayer].getPosition();
+        vel = player[currentPlayer].getVelocity();
+        player[currentPlayer].resetMoves();
+        currentState = player[currentPlayer].getCurrentState();
+        previousState = player[currentPlayer].getPreviousState();
+        stateTimer = player[currentPlayer].getStateTimer();
+
+        if (verse == 1)
+            if (++currentPlayer > 2) currentPlayer = 0;
+        if (verse == -1)
+            if (--currentPlayer < 0) currentPlayer = 2;
+
+        player[currentPlayer].setRunningRight(runningRight);
+        player[currentPlayer].setPosition(pos);
+        player[currentPlayer].setVelocity(vel);
+        player[currentPlayer].setCurrentState(currentState);
+        player[currentPlayer].setPreviousState(previousState);
+        player[currentPlayer].setStateTimer(stateTimer);
+
+        Gdx.app.log("Ciao", "" + currentPlayer);
+    }
 }

@@ -46,7 +46,7 @@ public class Player extends Sprite {
     private float stateTimer;
     private boolean runningRight;
 
-    private int currentPlayer;
+    public int currentPlayer;
 
     public Player(TiledMapTileLayer collisionLayer, String playerTexture, int currentPlayer) {
         super(new Texture(playerTexture));
