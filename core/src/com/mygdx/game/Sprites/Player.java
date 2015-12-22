@@ -9,78 +9,43 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Const;
-import com.mygdx.game.Screens.PlayScreen;
-import com.mygdx.game.androidGame;
 
-
-public class Player extends Sprite {
-
+public abstract class Player extends Sprite {
     // tile size
-    private int tileWidth = Const.TILE_WIDTH;
-    private int tileHeight = Const.TILE_HEIGHT;
+    protected int tileWidth = Const.TILE_WIDTH;
+    protected int tileHeight = Const.TILE_HEIGHT;
 
     // motion variables
-    private boolean grounded;
-    private boolean leftMove = false;
-    private boolean rightMove = false;
-    private boolean jumpMove = false;
+    protected boolean grounded;
+    protected boolean leftMove = false;
+    protected boolean rightMove = false;
+    protected boolean jumpMove = false;
 
     // player variables
-    public TiledMapTileLayer collisionLayer;
-    private Vector2 velocity = new Vector2();
+    protected TiledMapTileLayer collisionLayer;
+    protected Vector2 velocity = new Vector2();
 
     // world variables
-    public float speedX = Const.SPEED_X;
-    public float speedY = Const.SPEED_Y;
-    public float gravity = Const.GRAVITY;
+    protected float speedX = Const.SPEED_X;
+    protected float speedY = Const.SPEED_Y;
+    protected float gravity = Const.GRAVITY;
 
     // animation
     public enum State { FALLING, JUMPING, STANDING, RUNNING }
-    public State currentState;
-    public State previousState;
-    private TextureRegion playerStand;
-    private Animation playerRun;
-    private Animation playerJump;
-    private float stateTimer;
-    private boolean runningRight;
+    protected State currentState;
+    protected State previousState;
+    protected TextureRegion playerStand;
+    protected Animation playerRun;
+    protected Animation playerJump;
+    protected float stateTimer;
+    protected boolean runningRight;
 
     public int currentPlayer;
 
     public Player(TiledMapTileLayer collisionLayer, String playerTexture, int currentPlayer) {
         super(new Texture(playerTexture));
-        this.collisionLayer = collisionLayer;
-        this.currentPlayer = currentPlayer;
 
-        currentState = State.STANDING;
-        previousState = State.STANDING;
-        stateTimer = 0;
-        runningRight = true;
-
-        int k = 1;
-        if (currentPlayer == 1) k = 2;
-
-        Array<TextureRegion> frames = new Array<TextureRegion>();
-
-        // getting run frames
-        for (int i = 1; i < 4; i++) {
-            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16 * k));
-        }
-        playerRun = new Animation(Const.ANIMATION_TIME, frames);
-        frames.clear();
-
-        // getting jump frames
-        for (int i = 4; i < 6; i++) {
-            frames.add(new TextureRegion(getTexture(), i * 16, 0, 16, 16 * k));
-        }
-        playerJump = new Animation(0.1f, frames);
-        frames.clear();
-
-        playerStand = new TextureRegion(getTexture(), 0, 0, 16, 16 * k);
-
-        setBounds(0, 0, 30, 32 * k);
-        setRegion(playerStand);
     }
 
     public void update (float dt) {
@@ -106,6 +71,18 @@ public class Player extends Sprite {
         }
 
         setRegion(getFrame(dt));
+    }
+
+    private void updateMove() {
+        if (rightMove)
+            velocity.x = speedX;
+        else if (leftMove)
+            velocity.x = -speedX;
+
+        if (grounded && jumpMove) {
+            velocity.y = speedY;
+            grounded = false;
+        }
     }
 
     public TextureRegion getFrame(float dt) {
@@ -192,24 +169,14 @@ public class Player extends Sprite {
         jumpMove = false;
     }
 
-    private void updateMove() {
-        if (rightMove)
-            velocity.x = speedX;
-        else if (leftMove)
-            velocity.x = -speedX;
-
-        if (grounded && jumpMove) {
-            velocity.y = speedY;
-            grounded = false;
-        }
-    }
-
     private boolean checkCollisionX(float x, float y) {
         boolean collided = false;
 
         if (velocity.x < 0) {
             // top left
-            if(collisionLayer.getCell((int) (x  / tileWidth),(int) ((y + getHeight()) / tileHeight)) != null) {
+            if(collisionLayer.getCell(
+                    (int) (x  / tileWidth),
+                    (int) ((y + getHeight()) / tileHeight)) != null) {
                 collided = collisionLayer.getCell(
                         (int) (x / tileWidth),
                         (int) ((y + getHeight()) / tileHeight)
@@ -218,7 +185,9 @@ public class Player extends Sprite {
 
             // middle left
             if (!collided)
-                if(collisionLayer.getCell((int) (x / tileWidth),(int) ((y + getHeight() / 2) / tileHeight)) != null) {
+                if(collisionLayer.getCell(
+                        (int) (x / tileWidth),
+                        (int) ((y + getHeight() / 2) / tileHeight)) != null) {
                     collided = collisionLayer.getCell(
                             (int) (x / tileWidth),
                             (int) ((y + getHeight() / 2) / tileHeight)
@@ -227,7 +196,9 @@ public class Player extends Sprite {
 
             // bottom left
             if (!collided)
-                if(collisionLayer.getCell((int) (x / tileWidth),(int) (y / tileHeight)) != null) {
+                if(collisionLayer.getCell(
+                        (int) (x / tileWidth),
+                        (int) (y / tileHeight)) != null) {
                     collided = collisionLayer.getCell(
                             (int) (x / tileWidth),
                             (int) (y / tileHeight)
@@ -236,7 +207,9 @@ public class Player extends Sprite {
         }
         else if (velocity.x > 0) {
             // top right
-            if(collisionLayer.getCell((int) ((x + getWidth()) / tileWidth),(int) ((y + getHeight()) / tileHeight)) != null) {
+            if(collisionLayer.getCell(
+                    (int) ((x + getWidth()) / tileWidth),
+                    (int) ((y + getHeight()) / tileHeight)) != null) {
                 collided = collisionLayer.getCell(
                         (int) ((x + getWidth()) / tileWidth),
                         (int) ((y + getHeight()) / tileHeight)
@@ -245,7 +218,9 @@ public class Player extends Sprite {
 
             // middle right
             if (!collided)
-                if(collisionLayer.getCell((int) ((x + getWidth()) / tileWidth),(int) ((y + getHeight() / 2) / tileHeight)) != null) {
+                if(collisionLayer.getCell(
+                        (int) ((x + getWidth()) / tileWidth),
+                        (int) ((y + getHeight() / 2) / tileHeight)) != null) {
                     collided = collisionLayer.getCell(
                             (int) ((x + getWidth()) / tileWidth),
                             (int) ((y + getHeight() / 2) / tileHeight)
@@ -254,7 +229,9 @@ public class Player extends Sprite {
 
             // bottom right
             if (!collided)
-                if(collisionLayer.getCell((int) ((x + getWidth()) / tileWidth),(int) (y / tileHeight)) != null) {
+                if(collisionLayer.getCell(
+                        (int) ((x + getWidth()) / tileWidth),
+                        (int) (y / tileHeight)) != null) {
                     collided = collisionLayer.getCell(
                             (int) ((x + getWidth()) / tileWidth),
                             (int) (y / tileHeight)
@@ -270,7 +247,9 @@ public class Player extends Sprite {
 
         if (velocity.y > 0) {
             // top left
-            if(collisionLayer.getCell((int) (x / tileWidth),(int) ((y + getHeight()) / tileHeight)) != null) {
+            if(collisionLayer.getCell(
+                    (int) (x / tileWidth),
+                    (int) ((y + getHeight()) / tileHeight)) != null) {
                 collided = collisionLayer.getCell(
                         (int) (x / tileWidth),
                         (int) ((y + getHeight()) / tileHeight)
@@ -279,7 +258,9 @@ public class Player extends Sprite {
 
             // top middle
             if (!collided)
-                if(collisionLayer.getCell((int) ((x + getWidth() / 2) / tileWidth),(int) ((y + getHeight()) / tileHeight)) != null) {
+                if(collisionLayer.getCell(
+                        (int) ((x + getWidth() / 2) / tileWidth),
+                        (int) ((y + getHeight()) / tileHeight)) != null) {
                     collided = collisionLayer.getCell(
                             (int) ((x + getWidth() / 2) / tileWidth),
                             (int) ((y + getHeight()) / tileHeight)
@@ -287,7 +268,9 @@ public class Player extends Sprite {
                 }
 
             // top right
-            if(collisionLayer.getCell((int) ((x + getWidth()) / tileWidth),(int) ((y + getHeight()) / tileHeight)) != null) {
+            if(collisionLayer.getCell(
+                    (int) ((x + getWidth()) / tileWidth),
+                    (int) ((y + getHeight()) / tileHeight)) != null) {
                 collided = collisionLayer.getCell(
                         (int) ((x + getWidth()) / tileWidth),
                         (int) ((y + getHeight()) / tileHeight)
@@ -304,7 +287,9 @@ public class Player extends Sprite {
             }
             // bottom middle
             if (!collided)
-                if(collisionLayer.getCell((int) ((x + getWidth() / 2) / tileWidth),(int) (y / tileHeight)) != null) {
+                if(collisionLayer.getCell((int) (
+                        (x + getWidth() / 2) / tileWidth),
+                        (int) (y / tileHeight)) != null) {
                     collided = collisionLayer.getCell(
                             (int) ((x + getWidth() /2 ) / tileWidth),
                             (int) (y / tileHeight)
@@ -312,7 +297,9 @@ public class Player extends Sprite {
                 }
             // bottom right
             if (!collided)
-                if(collisionLayer.getCell((int) ((x + getWidth()) / tileWidth),(int) (y / tileHeight)) != null) {
+                if(collisionLayer.getCell(
+                        (int) ((x + getWidth()) / tileWidth),
+                        (int) (y / tileHeight)) != null) {
                     collided = collisionLayer.getCell(
                             (int) ((x + getWidth()) / tileWidth),
                             (int) (y / tileHeight)

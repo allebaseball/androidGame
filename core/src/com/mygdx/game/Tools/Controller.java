@@ -15,17 +15,20 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.mygdx.game.Const;
+import com.mygdx.game.Screens.PlayScreen;
 import com.mygdx.game.androidGame;
 
 public class Controller {
     Viewport viewport;
     Stage stage;
     boolean leftPressed, rightPressed;
+    public boolean switchLeft, switchRight;
     OrthographicCamera cam;
 
     Table table;
 
-    public Controller() {
+    public Controller(PlayScreen playS) {
+        final PlayScreen playSc = playS;
         cam = new OrthographicCamera();
         viewport = new FitViewport(Const.V_WIDTH, Const.V_HEIGHT, cam);
         stage = new Stage(viewport, androidGame.batch);
@@ -36,15 +39,15 @@ public class Controller {
                 switch (keycode) {
                     // move player input handling
                     case Input.Keys.A:
-                        leftPressed = true;
+                        playSc.player[playSc.currentPlayer].moveLeft();
                         break;
 
                     case Input.Keys.D:
-                        rightPressed = true;
+                        playSc.player[playSc.currentPlayer].moveRight();
                         break;
 
                     case Input.Keys.W:
-//                        player[currentPlayer].jump();
+                        playSc.player[playSc.currentPlayer].jump();
                         break;
 
 //                    // cheats
@@ -57,14 +60,14 @@ public class Controller {
 //                            player[currentPlayer].setX(player[currentPlayer].getX() - 600);
 //                        break;
 
-//                    // switch player input handling
-//                    case Input.Keys.Q:
-//                        switchPlayer(-1);
-//                        break;
-//
-//                    case Input.Keys.E:
-//                        switchPlayer(1);
-//                        break;
+                    // switch player input handling
+                    case Input.Keys.Q:
+                        playSc.switchPlayer(-1);
+                        break;
+
+                    case Input.Keys.E:
+                        playSc.switchPlayer(1);
+                        break;
 
                     default:
                         break;
@@ -76,15 +79,15 @@ public class Controller {
             public boolean keyUp(InputEvent event, int keycode) {
                 switch (keycode) {
                     case Input.Keys.A:
-                        leftPressed = false;
+                        playSc.player[playSc.currentPlayer].notMoveLeft();
                         break;
 
                     case Input.Keys.D:
-                        rightPressed = false;
+                        playSc.player[playSc.currentPlayer].notMoveRight();
                         break;
 
                     case Input.Keys.W:
-//                        player[currentPlayer].notJump();
+                        playSc.player[playSc.currentPlayer].notJump();
                         break;
 
                     default:
@@ -153,6 +156,10 @@ public class Controller {
     public boolean isRightPressed() {
         return rightPressed;
     }
+
+    public boolean isSwitchedLeft() { return switchLeft; }
+
+    public boolean isSwitchedRight() { return switchRight; }
 
     public void resize(int width, int height){
         viewport.update(width,height);

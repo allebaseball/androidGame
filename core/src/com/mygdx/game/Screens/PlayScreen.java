@@ -1,8 +1,6 @@
  package com.mygdx.game.Screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,6 +15,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Const;
 import com.mygdx.game.Scenes.Hud;
+import com.mygdx.game.Sprites.Fighter;
+import com.mygdx.game.Sprites.Hooker;
+import com.mygdx.game.Sprites.Jumper;
 import com.mygdx.game.Sprites.Player;
 import com.mygdx.game.Tools.Controller;
 import com.mygdx.game.androidGame;
@@ -34,9 +35,9 @@ public class PlayScreen implements Screen {
     private OrthogonalTiledMapRenderer renderer;
 
     // player creation
-    private Player[] player = new Player[3];
+    public Player[] player = new Player[3];
     private Vector2 spawnPos;
-    private int currentPlayer = 0;
+    public int currentPlayer = 0;
 
     // controller
     Controller controller;
@@ -67,29 +68,37 @@ public class PlayScreen implements Screen {
 
         FPSfont = new BitmapFont();
 
-        player[0] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER1_PATH, 0);
-        player[1] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER2_PATH, 1);
-        player[2] = new Player((TiledMapTileLayer) map.getLayers().get(1), Const.PLAYER1_PATH, 2);
+        player[0] = new Fighter((TiledMapTileLayer) map.getLayers().get(1), 0);
+        player[1] = new Jumper((TiledMapTileLayer) map.getLayers().get(1), 1);
+        player[2] = new Hooker((TiledMapTileLayer) map.getLayers().get(1), 2);
         player[currentPlayer].setPosition(spawnPos.x,spawnPos.y);
 
-        controller = new Controller();
+        controller = new Controller(this);
 //        Gdx.input.setInputProcessor(this);
     }
 
-    public void handleInput(){
-    if(controller.isRightPressed())
-        player[currentPlayer].moveRight();
-    else if(controller.isLeftPressed())
-        player[currentPlayer].moveLeft();
-    else {
-        player[currentPlayer].notMoveRight();
-        player[currentPlayer].notMoveLeft();
-    }
-
+    public void handleInput() {
+//        if (controller.isRightPressed())
+//            player[currentPlayer].moveRight();
+//        else if (controller.isLeftPressed())
+//            player[currentPlayer].moveLeft();
+//        else {
+//            player[currentPlayer].notMoveRight();
+//            player[currentPlayer].notMoveLeft();
+//        }
+//
+//        if (controller.isSwitchedLeft()) {
+//            switchPlayer(-1);
+//            controller.switchLeft = false;
+//        }
+//        else if (controller.isSwitchedRight()) {
+//            switchPlayer(1);
+//            controller.switchLeft = false;
+//        }
     }
 
     public void update(float dt) {
-        handleInput();
+//        handleInput();
         player[currentPlayer].update(dt);
 
         gamecam.position.x = player[currentPlayer].getX() + player[currentPlayer].getWidth() / 2;
