@@ -91,7 +91,7 @@ public class Controller {
                         break;
 
                     case Input.Keys.W:
-                        playSc.player[playSc.currentPlayer].notJump();
+//                        playSc.player[playSc.currentPlayer].notJump();
                         break;
 
                     default:

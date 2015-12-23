@@ -51,7 +51,7 @@ public abstract class Player extends Sprite {
     public void update (float dt) {
         // apply gravity
         velocity.y -= gravity*dt;
-        updateMove();
+        this.updateMove();
 
         velocity.y = MathUtils.clamp(velocity.y, -speedY, speedY);
 
@@ -73,16 +73,18 @@ public abstract class Player extends Sprite {
         setRegion(getFrame(dt));
     }
 
-    private void updateMove() {
+    protected void updateMove() {
         if (rightMove)
             velocity.x = speedX;
         else if (leftMove)
             velocity.x = -speedX;
 
         if (grounded && jumpMove) {
+            jumpMove = false;
             velocity.y = speedY;
             grounded = false;
         }
+        else jumpMove = false;
     }
 
     public TextureRegion getFrame(float dt) {
