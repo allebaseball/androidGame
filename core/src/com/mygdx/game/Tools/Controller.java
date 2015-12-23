@@ -40,10 +40,12 @@ public class Controller {
                     // move player input handling
                     case Input.Keys.A:
                         playSc.player[playSc.currentPlayer].moveLeft();
+//                        leftPressed = true;
                         break;
 
                     case Input.Keys.D:
                         playSc.player[playSc.currentPlayer].moveRight();
+//                        rightPressed = true;
                         break;
 
                     case Input.Keys.W:
@@ -80,10 +82,12 @@ public class Controller {
                 switch (keycode) {
                     case Input.Keys.A:
                         playSc.player[playSc.currentPlayer].notMoveLeft();
+//                        leftPressed = false;
                         break;
 
                     case Input.Keys.D:
                         playSc.player[playSc.currentPlayer].notMoveRight();
+//                        rightPressed = false;
                         break;
 
                     case Input.Keys.W:
@@ -112,13 +116,15 @@ public class Controller {
         rightImg.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                rightPressed = true;
+                playSc.player[playSc.currentPlayer].moveRight();
+//                rightPressed = true;
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                rightPressed = false;
+                playSc.player[playSc.currentPlayer].notMoveRight();
+//                rightPressed = false;
             }
         });
 
@@ -127,13 +133,15 @@ public class Controller {
         leftImg.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                leftPressed = true;
+                playSc.player[playSc.currentPlayer].moveLeft();
+//                leftPressed = true;
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                leftPressed = false;
+                playSc.player[playSc.currentPlayer].notMoveLeft();
+//                leftPressed = false;
             }
         });
 
