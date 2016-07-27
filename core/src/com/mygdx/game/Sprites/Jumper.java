@@ -46,7 +46,7 @@ public class Jumper extends Player {
     @Override
     protected void updateMove() {
         if (grounded) jumpCount = 0;
-        
+
         if (rightMove)
             velocity.x = speedX;
         else if (leftMove)
