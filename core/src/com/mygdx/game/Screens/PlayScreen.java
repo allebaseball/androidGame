@@ -42,7 +42,7 @@ public class PlayScreen implements Screen {
     // controller
     Controller controller;
 
-    private BitmapFont FPSfont;
+    private BitmapFont FPSfont = new BitmapFont();
 
     public PlayScreen(androidGame game) {
         this.game = game;
@@ -66,14 +66,12 @@ public class PlayScreen implements Screen {
 
         hud = new Hud(game.batch);
 
-        FPSfont = new BitmapFont();
-
         player[0] = new Fighter((TiledMapTileLayer) map.getLayers().get(1), 0);
         player[1] = new Jumper((TiledMapTileLayer) map.getLayers().get(1), 1);
         player[2] = new Hooker((TiledMapTileLayer) map.getLayers().get(1), 2);
         player[currentPlayer].setPosition(spawnPos.x,spawnPos.y);
 
-        controller = new Controller(this);
+        controller = new Controller();
 //        Gdx.input.setInputProcessor(this);
     }
 

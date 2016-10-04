@@ -2,17 +2,12 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.game.Screens.MenuScreen;
-import com.mygdx.game.Screens.PlayScreen;
+import com.mygdx.game.Screens.MainMenu;
 
 public class androidGame extends Game {
 	// batches
 	public static SpriteBatch batch;
 	public SpriteBatch FPSbatch;
-
-	// screens
-	public PlayScreen playS;
-	public MenuScreen menuS;
 
 
 	@Override
@@ -21,13 +16,17 @@ public class androidGame extends Game {
 		FPSbatch = new SpriteBatch();
 
 		// screens creation
-		menuS = new MenuScreen(this);
-		playS = new PlayScreen(this);
-		setScreen(menuS);
+
+		setScreen(new MainMenu(this));
 	}
 
 	@Override
 	public void render () {
 		super.render();
+	}
+
+	public void dispose() {
+		batch.dispose();
+		FPSbatch.dispose();
 	}
 }

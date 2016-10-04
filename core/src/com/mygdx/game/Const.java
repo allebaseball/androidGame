@@ -27,6 +27,18 @@ public class Const {
     public static final String PLAYER2_PATH = "sprites/big_mario.png";
     public static final String LEFTARROW_PATH = "sprites/left_arrow.png";
     public static final String RIGHTARROW_PATH = "sprites/right_arrow.png";
+    public static final String JOYSTICK_BACK_PATH = "sprites/Joystick/Joystick_background.png";
+    public static final String JOYSTICK_KNOB_PATH = "sprites/Joystick/Joystick_knob.png";
+    public static final String MENU_START_PATH = "sprites/MainMenu/Menu_start.png";
+    public static final String MENU_SETTINGS_PATH = "sprites/MainMenu/Menu_settings.png";
+    public static final String MENU_QUIT_PATH = "sprites/MainMenu/Menu_quit.png";
+
+    // controller variables
+    public static final int STICK_NONE = 0;
+    public static final int STICK_UP = 1;
+    public static final int STICK_RIGHT = 2;
+    public static final int STICK_DOWN = 3;
+    public static final int STICK_LEFT = 4;
 
     private Const() {
         throw new AssertionError();
