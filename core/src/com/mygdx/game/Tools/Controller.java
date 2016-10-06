@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,25 +19,58 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.mygdx.game.Const;
 import com.mygdx.game.Screens.PlayScreen;
 import com.mygdx.game.androidGame;
+import javafx.scene.image.ImageView;
 
 public class Controller {
     Viewport viewport;
     Stage stage;
     OrthographicCamera cam;
 
+    Image joyBack,joyKnob;
+
+    private int touchPosX = 0,touchPosY = 0, min_distance = 0;
+
     public Controller() {
         cam = new OrthographicCamera();
         viewport = new FitViewport(Const.V_WIDTH, Const.V_HEIGHT, cam);
         stage = new Stage(viewport, androidGame.batch);
-        Image joyBack = new Image(new Texture(Const.JOYSTICK_BACK_PATH));
-        Image joyKnob = new Image(new Texture(Const.JOYSTICK_KNOB_PATH));
+        Gdx.input.setInputProcessor(stage);
+
+        joyBack = new Image(new Texture(Const.JOYSTICK_BACK_PATH));
+        joyKnob = new Image(new Texture(Const.JOYSTICK_KNOB_PATH));
 
         setImage(joyBack, 200 , 200, 0, 0, .3f);
         setImage(joyKnob, 75, 75,63, 63, .3f);
+        joyKnob.setSize(75,75);
+        joyKnob.setColor(joyKnob.getColor().r, joyKnob.getColor().r, joyKnob.getColor().r,.3f);
 
+
+        joyBack.addListener(new InputListener() {
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                touchPosX =(int) ( x - joyKnob.getWidth()/2 );
+                touchPosY =(int) ( y - joyKnob.getHeight()/2 );
+                joyKnob.setPosition(touchPosX,touchPosY);
+                
+                stage.addActor(joyKnob);
+                //drawStick();
+                return true;
+            }
+
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                touchPosX =(int) ( x - joyKnob.getWidth()/2 );
+                touchPosY =(int) ( y - joyKnob.getHeight()/2);
+                joyKnob.setPosition(touchPosX,touchPosY);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                joyKnob.remove();
+            }
+        });
         stage.addActor(joyBack);
-        stage.addActor(joyKnob);
-
     }
 
     public void draw() {
@@ -53,6 +87,12 @@ public class Controller {
         Img.setPosition(posX, posY);
 
     }
+
+    public void setMinimumDistance(int minDistance){
+        min_distance = minDistance;
+    }
+
+
 }
 
 
