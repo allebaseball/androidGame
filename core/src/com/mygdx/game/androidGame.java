@@ -4,6 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Screens.MainMenu;
 
+
+
 public class androidGame extends Game {
 	// batches
 	public static SpriteBatch batch;
@@ -14,9 +16,7 @@ public class androidGame extends Game {
 	public void create () {
 		batch = new SpriteBatch();
 		FPSbatch = new SpriteBatch();
-
 		// screens creation
-
 		setScreen(new MainMenu(this));
 	}
 

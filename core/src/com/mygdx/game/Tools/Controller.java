@@ -29,6 +29,7 @@ public class Controller {
     Image joyBack,joyKnob;
 
     private int touchPosX = 0,touchPosY = 0, min_distance = 0;
+    private float distance = 0;
 
     public Controller() {
         cam = new OrthographicCamera();
@@ -60,9 +61,26 @@ public class Controller {
 
             @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                touchPosX =(int) ( x - joyKnob.getWidth()/2 );
-                touchPosY =(int) ( y - joyKnob.getHeight()/2);
-                joyKnob.setPosition(touchPosX,touchPosY);
+                touchPosX =(int) ( x - joyBack.getWidth()/2 );
+                touchPosY =(int) ( y - joyBack.getHeight()/2);
+                distance = (float) Math.sqrt(Math.pow(touchPosX, 2) + Math.pow(touchPosY, 2));
+
+                //Gdx.app.log("distance =", "" + distance);
+                Gdx.app.log("distance", "" + distance);
+                if(distance <= joyBack.getWidth()/2)
+                    joyKnob.setPosition(x - joyKnob.getWidth()/2,y - joyKnob.getHeight()/2);
+                else if(distance > joyBack.getWidth()/2){
+                    float actualX = (float) (Math.cos(Math.toRadians(cal_angle(touchPosX,touchPosY)))*100);
+                    float actualY = (float) (Math.sin(Math.toRadians(cal_angle(touchPosY,touchPosY))));
+
+                    actualX+= joyBack.getWidth()/2;
+                    actualY+= joyBack.getHeight()/2;
+                    joyKnob.setPosition(actualX,actualY);
+
+                }else
+                joyKnob.remove();
+
+
             }
 
             @Override
@@ -86,6 +104,18 @@ public class Controller {
         Img.setColor(Img.getColor().r, Img.getColor().r, Img.getColor().r, alpha);
         Img.setPosition(posX, posY);
 
+    }
+
+    private double cal_angle(float x, float y) {
+        if(x >= 0 && y >= 0)
+            return Math.toDegrees(Math.atan(y / x));
+        else if(x < 0 && y >= 0)
+            return Math.toDegrees(Math.atan(y / x)) + 180;
+        else if(x < 0 && y < 0)
+            return Math.toDegrees(Math.atan(y / x)) + 180;
+        else if(x >= 0 && y < 0)
+            return Math.toDegrees(Math.atan(y / x)) + 360;
+        return 0;
     }
 
     public void setMinimumDistance(int minDistance){
