@@ -1,25 +1,16 @@
 package com.mygdx.game.Tools;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.mygdx.game.Const;
-import com.mygdx.game.Screens.PlayScreen;
 import com.mygdx.game.androidGame;
-import javafx.scene.image.ImageView;
 
 public class Controller {
     Viewport viewport;
@@ -28,8 +19,9 @@ public class Controller {
 
     Image joyBack,joyKnob;
 
-    private int touchPosX = 0,touchPosY = 0, min_distance = 0;
-    private float distance = 0;
+    private boolean touch_state = false;
+    private int touchPosX = 0, touchPosY = 0, min_distance = 0;
+    private float distance = 0, angle = 0;
 
     public Controller() {
         cam = new OrthographicCamera();
@@ -45,46 +37,54 @@ public class Controller {
         joyKnob.setSize(75,75);
         joyKnob.setColor(joyKnob.getColor().r, joyKnob.getColor().r, joyKnob.getColor().r,.3f);
 
-
         joyBack.addListener(new InputListener() {
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                touchPosX =(int) ( x - joyKnob.getWidth()/2 );
-                touchPosY =(int) ( y - joyKnob.getHeight()/2 );
-                joyKnob.setPosition(touchPosX,touchPosY);
-                
-                stage.addActor(joyKnob);
-                //drawStick();
-                return true;
+                touchPosX = (int) (x - joyBack.getWidth() / 2);
+                touchPosY = (int) (y - joyBack.getHeight() / 2);
+                distance = (float) Math.sqrt(Math.pow(touchPosX, 2) + Math.pow(touchPosY, 2));
+
+                if(distance <= (joyBack.getWidth()/2)) {
+                    touch_state = true;
+
+                    angle = (float) Math.toDegrees(cal_angle(touchPosX, touchPosY));
+
+                    joyKnob.setPosition(x - joyKnob.getWidth() / 2, y - joyKnob.getHeight() / 2);
+                    stage.addActor(joyKnob);
+                    return true;
+                }
+                return false;
             }
 
             @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                touchPosX =(int) ( x - joyBack.getWidth()/2 );
-                touchPosY =(int) ( y - joyBack.getHeight()/2);
-                distance = (float) Math.sqrt(Math.pow(touchPosX, 2) + Math.pow(touchPosY, 2));
+                touchPosX = (int) (x - joyBack.getWidth()/2);
+                touchPosY = (int) (y - joyBack.getHeight()/2);
 
-                //Gdx.app.log("distance =", "" + distance);
-                Gdx.app.log("distance", "" + distance);
+                distance = (float) Math.sqrt(Math.pow(touchPosX, 2) + Math.pow(touchPosY, 2));
+                angle = (float) Math.toDegrees(cal_angle(touchPosX, touchPosY));
+                //Gdx.app.log("angleDrag","" + angle);
+
                 if(distance <= joyBack.getWidth()/2)
                     joyKnob.setPosition(x - joyKnob.getWidth()/2,y - joyKnob.getHeight()/2);
-                else if(distance > joyBack.getWidth()/2){
-                    float actualX = (float) (Math.cos(Math.toRadians(cal_angle(touchPosX,touchPosY)))*100);
-                    float actualY = (float) (Math.sin(Math.toRadians(cal_angle(touchPosY,touchPosY))));
 
-                    actualX+= joyBack.getWidth()/2;
-                    actualY+= joyBack.getHeight()/2;
-                    joyKnob.setPosition(actualX,actualY);
+                else if(distance > joyBack.getWidth()/2){
+                    float actualX = (float) (Math.cos(cal_angle(touchPosX,touchPosY)) *joyBack.getWidth()/2);
+                    float actualY = (float) (Math.sin(cal_angle(touchPosX,touchPosY)) *joyBack.getHeight()/2);
+
+                    actualX += (joyBack.getWidth()/2);
+                    actualY += (joyBack.getHeight()/2);
+
+                    joyKnob.setPosition(actualX - joyKnob.getWidth()/2,actualY - joyKnob.getHeight()/2);
 
                 }else
                 joyKnob.remove();
-
-
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                touch_state = false;
                 joyKnob.remove();
             }
         });
@@ -107,22 +107,29 @@ public class Controller {
     }
 
     private double cal_angle(float x, float y) {
-        if(x >= 0 && y >= 0)
-            return Math.toDegrees(Math.atan(y / x));
-        else if(x < 0 && y >= 0)
-            return Math.toDegrees(Math.atan(y / x)) + 180;
-        else if(x < 0 && y < 0)
-            return Math.toDegrees(Math.atan(y / x)) + 180;
-        else if(x >= 0 && y < 0)
-            return Math.toDegrees(Math.atan(y / x)) + 360;
+        return Math.atan2(y,x);
+    }
+
+    public int get4Direction() {
+        if(distance > min_distance && touch_state) {
+            if(angle >= 45 && angle < 135 ) {
+                return Const.STICK_UP;
+            } else if(angle >= -45 && angle < 45 ) {
+                return Const.STICK_RIGHT;
+            } else if(angle >= -135 && angle < -45 ) {
+                return Const.STICK_DOWN;
+            } else if((angle >= 135 && angle <= 180 )||(angle >=-180 && angle < -135)) {
+                return Const.STICK_LEFT;
+            }
+        } else if(distance <= min_distance && touch_state) {
+            return Const.STICK_NONE;
+        }
         return 0;
     }
 
     public void setMinimumDistance(int minDistance){
         min_distance = minDistance;
     }
-
-
 }
 
 

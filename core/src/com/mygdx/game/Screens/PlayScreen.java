@@ -73,31 +73,36 @@ public class PlayScreen implements Screen {
         player[currentPlayer].setPosition(spawnPos.x,spawnPos.y);
 
         controller = new Controller();
+        controller.setMinimumDistance(25);
 //        Gdx.input.setInputProcessor(this);
     }
 
-    public void handleInput() {
-//        if (controller.isRightPressed())
-//            player[currentPlayer].moveRight();
-//        else if (controller.isLeftPressed())
-//            player[currentPlayer].moveLeft();
-//        else {
-//            player[currentPlayer].notMoveRight();
-//            player[currentPlayer].notMoveLeft();
-//        }
-//
-//        if (controller.isSwitchedLeft()) {
-//            switchPlayer(-1);
-//            controller.switchLeft = false;
-//        }
-//        else if (controller.isSwitchedRight()) {
-//            switchPlayer(1);
-//            controller.switchLeft = false;
-//        }
+    public void handleInput( ) {
+        int direction = controller.get4Direction();
+        if(direction == Const.STICK_UP) {
+            //MOVE UP
+        }else if(direction == Const.STICK_RIGHT) {
+            //MOVE RIGHT
+            player[currentPlayer].notMoveLeft();
+            player[currentPlayer].moveRight();
+        }else if(direction == Const.STICK_DOWN) {
+            //MOVE DOWN
+        }else if(direction == Const.STICK_LEFT) {
+            //MOVE LEFT
+            player[currentPlayer].notMoveRight();
+            player[currentPlayer].moveLeft();
+        } if(direction == Const.STICK_NONE) {
+            //STAND
+            player[currentPlayer].notMoveLeft();
+            player[currentPlayer].notMoveRight();
+
+        }
+        Gdx.app.log("Pos","" + direction);
+
     }
 
     public void update(float dt) {
-//        handleInput();
+        handleInput();
         player[currentPlayer].update(dt);
 
         gamecam.position.x = player[currentPlayer].getX() + player[currentPlayer].getWidth() / 2;
