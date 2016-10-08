@@ -34,6 +34,7 @@ public class Controller {
 
         setImage(joyBack, 200 , 200, 0, 0, .3f);
         setImage(joyKnob, 75, 75,63, 63, .3f);
+
         joyKnob.setSize(75,75);
         joyKnob.setColor(joyKnob.getColor().r, joyKnob.getColor().r, joyKnob.getColor().r,.3f);
 
