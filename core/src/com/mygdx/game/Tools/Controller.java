@@ -2,6 +2,7 @@ package com.mygdx.game.Tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -12,46 +13,58 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.mygdx.game.Const;
 import com.mygdx.game.androidGame;
 
+
 public class Controller {
     Viewport viewport;
     Stage stage;
     OrthographicCamera cam;
 
-    Image joyBack,joyKnob;
-
+    Image joyBack,joyKnob,slide,AKey,BKey;
+    private boolean dragTouch_state = false;
     private boolean touch_state = false;
     private int touchPosX = 0, touchPosY = 0, min_distance = 0;
-    private float distance = 0, angle = 0;
+    private Vector2 startPos;
+    private float distance = 0, angle = 0, maxDistance = 0,dragDistance = 0;
+    private int OFFSET = 0;
 
     public Controller() {
         cam = new OrthographicCamera();
         viewport = new FitViewport(Const.V_WIDTH, Const.V_HEIGHT, cam);
         stage = new Stage(viewport, androidGame.batch);
         Gdx.input.setInputProcessor(stage);
+        Gdx.app.log("OFFSET", "" + OFFSET);
 
         joyBack = new Image(new Texture(Const.JOYSTICK_BACK_PATH));
         joyKnob = new Image(new Texture(Const.JOYSTICK_KNOB_PATH));
+        slide = new Image(new Texture(Const.JOYSTICK_SLIDE_PATH));
+        AKey = new Image(new Texture(Const.JOYSTICK_AKEY_PATH));
+        BKey = new Image(new Texture(Const.JOYSTICK_BKEY_PATH));
 
-        setImage(joyBack, 200 , 200, 0, 0, .3f);
-        setImage(joyKnob, 75, 75,63, 63, .3f);
+        setImage(joyBack, 140 , 140, OFFSET, OFFSET, .3f);
+        //setImage(joyKnob, 75, 75, 63, 63, .3f);
+        setImage(slide, 45, 140, OFFSET, 145 + OFFSET, .3f);
 
-        joyKnob.setSize(75,75);
+        maxDistance = (float) (joyBack.getWidth()*0.75/2);
+
+        joyKnob.setSize(60,60);
         joyKnob.setColor(joyKnob.getColor().r, joyKnob.getColor().r, joyKnob.getColor().r,.3f);
 
         joyBack.addListener(new InputListener() {
-
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 touchPosX = (int) (x - joyBack.getWidth() / 2);
-                touchPosY = (int) (y - joyBack.getHeight() / 2);
+                touchPosY = (int) (y -  joyBack.getHeight() / 2);
+                Gdx.app.log("coordinate_1","" +  x + ", " + y);
+
                 distance = (float) Math.sqrt(Math.pow(touchPosX, 2) + Math.pow(touchPosY, 2));
 
-                if(distance <= (joyBack.getWidth()/2)) {
+                if(distance <= maxDistance) {
                     touch_state = true;
 
                     angle = (float) Math.toDegrees(cal_angle(touchPosX, touchPosY));
 
-                    joyKnob.setPosition(x - joyKnob.getWidth() / 2, y - joyKnob.getHeight() / 2);
+                    joyKnob.setPosition(x + OFFSET - joyKnob.getWidth() / 2, y + OFFSET- joyKnob.getHeight() / 2);
+                    Gdx.app.log("coordinate_2","" +  x + ", " + y);
                     stage.addActor(joyKnob);
                     return true;
                 }
@@ -67,12 +80,12 @@ public class Controller {
                 angle = (float) Math.toDegrees(cal_angle(touchPosX, touchPosY));
                 //Gdx.app.log("angleDrag","" + angle);
 
-                if(distance <= joyBack.getWidth()/2)
-                    joyKnob.setPosition(x - joyKnob.getWidth()/2,y - joyKnob.getHeight()/2);
+                if(distance <= maxDistance)
+                    joyKnob.setPosition(x + OFFSET - joyKnob.getWidth()/2,y + OFFSET - joyKnob.getHeight()/2);
 
-                else if(distance > joyBack.getWidth()/2){
-                    float actualX = (float) (Math.cos(cal_angle(touchPosX,touchPosY)) *joyBack.getWidth()/2);
-                    float actualY = (float) (Math.sin(cal_angle(touchPosX,touchPosY)) *joyBack.getHeight()/2);
+                else if(distance > maxDistance){
+                    float actualX = (float) (Math.cos(cal_angle(touchPosX,touchPosY)) *maxDistance + OFFSET);
+                    float actualY = (float) (Math.sin(cal_angle(touchPosX,touchPosY)) *maxDistance + OFFSET);
 
                     actualX += (joyBack.getWidth()/2);
                     actualY += (joyBack.getHeight()/2);
@@ -89,6 +102,28 @@ public class Controller {
                 joyKnob.remove();
             }
         });
+
+        slide.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+
+                dragTouch_state = true;
+                startPos = new Vector2(x, y);
+                return true;
+            }
+
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                dragDistance = x - startPos.x;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                dragDistance = 0;
+                dragTouch_state = false;
+            }
+        });
+        stage.addActor(slide);
         stage.addActor(joyBack);
     }
 
@@ -125,6 +160,26 @@ public class Controller {
         } else if(distance <= min_distance && touch_state) {
             return Const.STICK_NONE;
         }
+        return 0;
+    }
+    public void resetDrag(){
+        dragTouch_state = false;
+    }
+
+    public void setUIPosition(int offset){
+        OFFSET = offset;
+        joyBack.setPosition(OFFSET,OFFSET);
+        slide.setPosition(OFFSET, joyBack.getHeight() + 5 + OFFSET);
+
+    }
+
+    public int getDragDistance(){
+        if(Math.abs(dragDistance) > slide.getWidth()/3 && dragTouch_state == true)
+            if(dragDistance > 0)
+                return 1;
+            else if(dragDistance < 0)
+                return -1;
+        else return 0;
         return 0;
     }
 

@@ -29,6 +29,9 @@ public class Const {
     public static final String RIGHTARROW_PATH = "sprites/right_arrow.png";
     public static final String JOYSTICK_BACK_PATH = "sprites/Joystick/Joystick_background.png";
     public static final String JOYSTICK_KNOB_PATH = "sprites/Joystick/Joystick_knob.png";
+    public static final String JOYSTICK_AKEY_PATH = "sprites/Joystick/Joystick_AKey.png";
+    public static final String JOYSTICK_BKEY_PATH = "sprites/Joystick/Joystick_BKey.png";
+    public static final String JOYSTICK_SLIDE_PATH = "sprites/Joystick/Joystick_Slide.png";
     public static final String MENU_START_PATH = "sprites/MainMenu/Menu_start.png";
     public static final String MENU_SETTINGS_PATH = "sprites/MainMenu/Menu_settings.png";
     public static final String MENU_QUIT_PATH = "sprites/MainMenu/Menu_quit.png";

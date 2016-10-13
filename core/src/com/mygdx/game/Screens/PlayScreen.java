@@ -74,6 +74,7 @@ public class PlayScreen implements Screen {
 
         controller = new Controller();
         controller.setMinimumDistance(25);
+        controller.setUIPosition(20);
 //        Gdx.input.setInputProcessor(this);
     }
 
@@ -97,7 +98,13 @@ public class PlayScreen implements Screen {
             player[currentPlayer].notMoveRight();
 
         }
-        Gdx.app.log("Pos","" + direction);
+
+        int drag = controller.getDragDistance();
+        if(drag!=0){
+            switchPlayer(drag);
+            controller.resetDrag();
+        }
+        //Gdx.app.log("Pos","" + direction);
 
     }
 
