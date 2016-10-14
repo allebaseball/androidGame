@@ -3,6 +3,7 @@ package com.mygdx.game.Tools;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,6 +23,7 @@ public class Controller {
     Image joyBack,joyKnob,slide,AKey,BKey;
     private boolean dragTouch_state = false;
     private boolean touch_state = false;
+    public boolean jumpPressed = false;
     private int touchPosX = 0, touchPosY = 0, min_distance = 0;
     private Vector2 startPos;
     private float distance = 0, angle = 0, maxDistance = 0,dragDistance = 0;
@@ -40,9 +42,13 @@ public class Controller {
         AKey = new Image(new Texture(Const.JOYSTICK_AKEY_PATH));
         BKey = new Image(new Texture(Const.JOYSTICK_BKEY_PATH));
 
-        setImage(joyBack, 140 , 140, OFFSET, OFFSET, .3f);
+        setImage(joyBack, 140 , 140, 0, 0, .3f);
         //setImage(joyKnob, 75, 75, 63, 63, .3f);
-        setImage(slide, 45, 140, OFFSET, 145 + OFFSET, .3f);
+        setImage(slide, 45, 140, 0, 145, .3f);
+
+        setImage(AKey, 65, 65, viewport.getScreenWidth() - 65, 65, .3f);
+        setImage(BKey, 65, 65, viewport.getScreenWidth() - 130, 0, .3f);
+        Gdx.app.log("width","" + viewport.getScreenWidth());
 
         maxDistance = (float) (joyBack.getWidth()*0.75/2);
 
@@ -53,7 +59,7 @@ public class Controller {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 touchPosX = (int) (x - joyBack.getWidth() / 2);
-                touchPosY = (int) (y -  joyBack.getHeight() / 2);
+                touchPosY = (int) (y - joyBack.getHeight() / 2);
                 Gdx.app.log("coordinate_1","" +  x + ", " + y);
 
                 distance = (float) Math.sqrt(Math.pow(touchPosX, 2) + Math.pow(touchPosY, 2));
@@ -64,7 +70,6 @@ public class Controller {
                     angle = (float) Math.toDegrees(cal_angle(touchPosX, touchPosY));
 
                     joyKnob.setPosition(x + OFFSET - joyKnob.getWidth() / 2, y + OFFSET- joyKnob.getHeight() / 2);
-                    Gdx.app.log("coordinate_2","" +  x + ", " + y);
                     stage.addActor(joyKnob);
                     return true;
                 }
@@ -123,11 +128,36 @@ public class Controller {
                 dragTouch_state = false;
             }
         });
+
+        AKey.addListener(new InputListener(){
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                jumpPressed = true;
+
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                jumpPressed = false;
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                if(jumpPressed)
+                    jumpPressed = false;
+            }
+        });
+
+        stage.addActor(AKey);
+        stage.addActor(BKey);
         stage.addActor(slide);
         stage.addActor(joyBack);
     }
 
     public void draw() {
+        stage.act();
         stage.draw();
     }
 
@@ -166,15 +196,21 @@ public class Controller {
         dragTouch_state = false;
     }
 
+    public void resetJump(){
+        jumpPressed = false;
+    }
+
     public void setUIPosition(int offset){
         OFFSET = offset;
         joyBack.setPosition(OFFSET,OFFSET);
         slide.setPosition(OFFSET, joyBack.getHeight() + 5 + OFFSET);
+        AKey.setPosition(viewport.getWorldWidth() - 65 - OFFSET,OFFSET + 65);
+        BKey.setPosition(viewport.getWorldWidth() - 130 - OFFSET,OFFSET);
 
     }
 
     public int getDragDistance(){
-        if(Math.abs(dragDistance) > slide.getWidth()/3 && dragTouch_state == true)
+        if(Math.abs(dragDistance) > slide.getWidth()/3 && dragTouch_state)
             if(dragDistance > 0)
                 return 1;
             else if(dragDistance < 0)
@@ -183,10 +219,20 @@ public class Controller {
         return 0;
     }
 
+    public boolean isJumpPressed(){
+        return jumpPressed;
+    }
+
     public void setMinimumDistance(int minDistance){
         min_distance = minDistance;
     }
+
+    public void dispose(){
+        stage.dispose();
+    }
+
 }
+
 
 
 

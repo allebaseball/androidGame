@@ -78,7 +78,7 @@ public class PlayScreen implements Screen {
 //        Gdx.input.setInputProcessor(this);
     }
 
-    public void handleInput( ) {
+    public void handleInput() {
         int direction = controller.get4Direction();
         if(direction == Const.STICK_UP) {
             //MOVE UP
@@ -96,7 +96,6 @@ public class PlayScreen implements Screen {
             //STAND
             player[currentPlayer].notMoveLeft();
             player[currentPlayer].notMoveRight();
-
         }
 
         int drag = controller.getDragDistance();
@@ -104,6 +103,16 @@ public class PlayScreen implements Screen {
             switchPlayer(drag);
             controller.resetDrag();
         }
+
+        if(controller.isJumpPressed()){
+            controller.resetJump();
+            player[currentPlayer].jump();
+        }
+
+        //else player[currentPlayer].notJump();
+
+
+
         //Gdx.app.log("Pos","" + direction);
 
     }
@@ -183,6 +192,7 @@ public class PlayScreen implements Screen {
         map.dispose();
         renderer.dispose();
         hud.dispose();
+        controller.dispose();
     }
 
 ////     InputProcessor methods
