@@ -10,16 +10,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.mygdx.game.Const;
 import com.mygdx.game.Scenes.Hud;
-import com.mygdx.game.Sprites.Fighter;
-import com.mygdx.game.Sprites.Hooker;
-import com.mygdx.game.Sprites.Jumper;
-import com.mygdx.game.Sprites.Player;
+import com.mygdx.game.Sprites.*;
 import com.mygdx.game.Tools.Controller;
 import com.mygdx.game.androidGame;
 
@@ -39,6 +37,9 @@ public class PlayScreen implements Screen {
     public Player[] player = new Player[3];
     private Vector2 spawnPos;
     public int currentPlayer = 0;
+
+    //platform creation
+    public Platform platform;
 
     // controller
     Controller controller;
@@ -71,6 +72,8 @@ public class PlayScreen implements Screen {
         player[1] = new Jumper((TiledMapTileLayer) map.getLayers().get(1), 1);
         player[2] = new Hooker((TiledMapTileLayer) map.getLayers().get(1), 2);
         player[currentPlayer].setPosition(spawnPos.x,spawnPos.y);
+
+        platform = new Platform(Const.GREEN_PATH, 250, 100, 100);
 
         controller = new Controller();
         controller.setMinimumDistance(25);
@@ -120,6 +123,7 @@ public class PlayScreen implements Screen {
     public void update(float dt) {
         handleInput();
         player[currentPlayer].update(dt);
+        platform.update(dt, player[currentPlayer].getBoundingRectangle());
 
         gamecam.position.x = player[currentPlayer].getX() + player[currentPlayer].getWidth() / 2;
         gamecam.position.x = MathUtils.clamp(
@@ -150,6 +154,7 @@ public class PlayScreen implements Screen {
         game.batch.begin();
 
         player[currentPlayer].draw(game.batch);
+        platform.draw(game.batch);
 //        FPSfont.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 20, 20);
         game.batch.end();
 

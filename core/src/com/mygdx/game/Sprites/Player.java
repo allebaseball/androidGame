@@ -10,7 +10,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Const;
-import javafx.scene.control.Cell;
 
 public abstract class Player extends Sprite {
     // tile size
@@ -46,7 +45,6 @@ public abstract class Player extends Sprite {
 
     public Player(TiledMapTileLayer collisionLayer, String playerTexture, int currentPlayer) {
         super(new Texture(playerTexture));
-
     }
 
     public void update (float dt) {
