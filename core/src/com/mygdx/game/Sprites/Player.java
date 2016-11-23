@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Const;
 
@@ -26,6 +27,9 @@ public abstract class Player extends Sprite {
     protected TiledMapTileLayer collisionLayer;
     protected Vector2 velocity = new Vector2();
 
+    //hitbox
+    protected Rectangle bottom, left, right, top;
+
     // world variables
     protected float speedX = Const.SPEED_X;
     protected float speedY = Const.SPEED_Y;
@@ -43,8 +47,11 @@ public abstract class Player extends Sprite {
 
     public int currentPlayer;
 
-    public Player(TiledMapTileLayer collisionLayer, String playerTexture, int currentPlayer) {
+    public Player(TiledMapTileLayer collisionLayer, String playerTexture) {
         super(new Texture(playerTexture));
+
+
+
     }
 
     public void update (float dt) {

@@ -8,11 +8,11 @@ import com.mygdx.game.Const;
 
 public class Fighter extends Player {
 
-    public Fighter(TiledMapTileLayer collisionLayer, int currentPlayer) {
-        super(collisionLayer, Const.PLAYER1_PATH, currentPlayer);
+    public Fighter(TiledMapTileLayer collisionLayer) {
+        super(collisionLayer, Const.PLAYER1_PATH);
 
         this.collisionLayer = collisionLayer;
-        this.currentPlayer = currentPlayer;
+
 
         currentState = State.STANDING;
         previousState = State.STANDING;

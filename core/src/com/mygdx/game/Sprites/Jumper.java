@@ -10,11 +10,11 @@ import com.mygdx.game.Const;
 public class Jumper extends Player {
     protected int jumpCount = 0;
 
-    public Jumper(TiledMapTileLayer collisionLayer, int currentPlayer) {
-        super(collisionLayer, Const.PLAYER2_PATH, currentPlayer);
+    public Jumper(TiledMapTileLayer collisionLayer) {
+        super(collisionLayer, Const.PLAYER2_PATH);
 
         this.collisionLayer = collisionLayer;
-        this.currentPlayer = currentPlayer;
+
 
         currentState = State.STANDING;
         previousState = State.STANDING;

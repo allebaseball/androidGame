@@ -8,11 +8,11 @@ import com.mygdx.game.Const;
 
 public class Hooker extends Player {
 
-    public Hooker(TiledMapTileLayer collisionLayer, int currentPlayer) {
-        super(collisionLayer, Const.PLAYER2_PATH, currentPlayer);
+    public Hooker(TiledMapTileLayer collisionLayer) {
+        super(collisionLayer, Const.PLAYER2_PATH);
 
         this.collisionLayer = collisionLayer;
-        this.currentPlayer = currentPlayer;
+
 
         currentState = State.STANDING;
         previousState = State.STANDING;

@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -21,7 +23,9 @@ import com.mygdx.game.Sprites.*;
 import com.mygdx.game.Tools.Controller;
 import com.mygdx.game.androidGame;
 
-public class PlayScreen implements Screen {
+import java.util.ArrayList;
+
+ public class PlayScreen implements Screen {
     private androidGame game;
 
     private OrthographicCamera gamecam;
@@ -32,6 +36,7 @@ public class PlayScreen implements Screen {
     private TmxMapLoader mapLoader;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
+    private TiledMapTileLayer platformLayer;
 
     // player creation
     public Player[] player = new Player[3];
@@ -39,6 +44,7 @@ public class PlayScreen implements Screen {
     public int currentPlayer = 0;
 
     //platform creation
+    private ArrayList<Platform> platforms = new ArrayList<Platform>();
     public Platform platform;
 
     // controller
@@ -68,12 +74,29 @@ public class PlayScreen implements Screen {
 
         hud = new Hud(game.batch);
 
-        player[0] = new Fighter((TiledMapTileLayer) map.getLayers().get(1), 0);
-        player[1] = new Jumper((TiledMapTileLayer) map.getLayers().get(1), 1);
-        player[2] = new Hooker((TiledMapTileLayer) map.getLayers().get(1), 2);
+        player[0] = new Fighter((TiledMapTileLayer) map.getLayers().get(1));
+        player[1] = new Jumper((TiledMapTileLayer) map.getLayers().get(1));
+        player[2] = new Hooker((TiledMapTileLayer) map.getLayers().get(1));
         player[currentPlayer].setPosition(spawnPos.x,spawnPos.y);
 
-        platform = new Platform(Const.GREEN_PATH, 250, 100, 100);
+        //platformLayer = (TiledMapTileLayer) map.getLayers().get(2);
+        for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
+            platforms.add(new Platform(Const.YELL_PATH, rect.getX(), rect.getY(), 100));
+        }
+//        Gdx.app.log("width", "" + platformLayer.getTileWidth());
+//        Gdx.app.log("height", "" + platformLayer.getTileHeight());
+
+
+//        Rectangle rekt = player[1].getBoundingRectangle();
+//        Gdx.app.log("width:",""+ rekt.getWidth());
+//        Gdx.app.log("height:",""+ rekt.getHeight());
+
+//        platform = new Platform(Const.GREEN_PATH, 250, 100, 100);
+
+//        platforms.add(new Platform(Const.GREEN_PATH, 250, 100, 100));
+//        platforms.add(new Platform(Const.RED_PATH, 400, 100, 100));
+//        platforms.add(new Platform(Const.YELL_PATH, 550, 100, 100));
 
         controller = new Controller();
         controller.setMinimumDistance(25);
@@ -123,7 +146,11 @@ public class PlayScreen implements Screen {
     public void update(float dt) {
         handleInput();
         player[currentPlayer].update(dt);
-        platform.update(dt, player[currentPlayer].getBoundingRectangle());
+        for(Platform t : platforms){
+            t.update(dt,  player[currentPlayer].getBoundingRectangle());
+        }
+
+        //platform.update(dt, player[currentPlayer].getBoundingRectangle());
 
         gamecam.position.x = player[currentPlayer].getX() + player[currentPlayer].getWidth() / 2;
         gamecam.position.x = MathUtils.clamp(
@@ -154,7 +181,10 @@ public class PlayScreen implements Screen {
         game.batch.begin();
 
         player[currentPlayer].draw(game.batch);
-        platform.draw(game.batch);
+        for(Platform t : platforms){
+            t.draw(game.batch);
+        }
+
 //        FPSfont.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 20, 20);
         game.batch.end();
 
